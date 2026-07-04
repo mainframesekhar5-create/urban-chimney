@@ -726,7 +726,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const address = document.getElementById('address');
     const date = document.getElementById('date');
     const time = document.getElementById('time');
-    const customerEmailField = document.getElementById('customerEmail');
     const serviceNameEl = document.getElementById('bookingServiceName');
     const servicePriceEl = document.getElementById('bookingPriceLabel');
 
@@ -772,7 +771,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const bookingId = `UC-${Math.floor(10000 + Math.random() * 90000)}`;
       const serviceValue = serviceField?.value || initialService;
-      const customerEmail = customerEmailField?.value.trim() || '';
       const bookingTime = new Date().toLocaleString();
       const booking = {
         id: bookingId,
@@ -783,7 +781,6 @@ document.addEventListener('DOMContentLoaded', () => {
         city: localStorage.getItem(AUTH_KEYS.city) || 'Not provided',
         mobile: localStorage.getItem(AUTH_KEYS.mobile) || 'N/A',
         customerName: localStorage.getItem(AUTH_KEYS.name) || 'Guest',
-        customerEmail,
         paymentMethod: 'Pending selection',
         paymentStatus: 'Pending',
         bookingTime,
@@ -802,7 +799,6 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.setItem(AUTH_KEYS.bookingPriceLabel, bookingPriceLabel);
       localStorage.setItem(AUTH_KEYS.paymentMethod, 'Pending selection');
       localStorage.setItem(AUTH_KEYS.paymentStatus, 'Pending');
-      localStorage.setItem(AUTH_KEYS.customerEmail, customerEmail);
       localStorage.setItem(AUTH_KEYS.bookingTime, bookingTime);
       showToast('Booking saved. Continue to payment.', 'success');
       window.setTimeout(() => window.location.href = 'payment.html', 400);
@@ -880,7 +876,6 @@ document.addEventListener('DOMContentLoaded', () => {
           time: localStorage.getItem(AUTH_KEYS.time) || 'As scheduled',
           mobile: localStorage.getItem(AUTH_KEYS.mobile) || 'N/A',
           customerName: localStorage.getItem(AUTH_KEYS.name) || 'Guest',
-          customerEmail: localStorage.getItem(AUTH_KEYS.customerEmail) || '',
           amount: localStorage.getItem(AUTH_KEYS.bookingPriceLabel) || localStorage.getItem(AUTH_KEYS.bookingAmount) || '₹599',
           paymentMethod,
           paymentStatus: 'Completed',
@@ -958,11 +953,10 @@ document.addEventListener('DOMContentLoaded', () => {
       paymentStatus,
       id: booking.id || localStorage.getItem(AUTH_KEYS.bookingId) || 'UC-1001',
       bookingTime,
-      customerEmail: booking.customerEmail || localStorage.getItem(AUTH_KEYS.customerEmail) || '',
       createdAt: bookingTime
     };
 
-    if (!emailService || typeof emailService.buildEmailParams !== 'function' || typeof emailService.buildCustomerEmailParams !== 'function') {
+    if (!emailService || typeof emailService.buildEmailParams !== 'function') {
       throw new Error('Email service helper is unavailable.');
     }
 
@@ -978,11 +972,6 @@ document.addEventListener('DOMContentLoaded', () => {
     window.emailjs.init(emailService.EMAILJS_CONFIG.publicKey);
     const ownerEmail = emailService.buildEmailParams(bookingPayload);
     await window.emailjs.send(emailService.EMAILJS_CONFIG.serviceId, emailService.EMAILJS_CONFIG.templateId, ownerEmail.params);
-
-    if (bookingPayload.customerEmail) {
-      const customerEmail = emailService.buildCustomerEmailParams(bookingPayload);
-      await window.emailjs.send(emailService.EMAILJS_CONFIG.serviceId, emailService.EMAILJS_CONFIG.templateId, customerEmail.params);
-    }
   };
 
   const initAuth = () => {
