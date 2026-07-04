@@ -14,8 +14,11 @@ document.addEventListener('DOMContentLoaded', () => {
     time: 'time',
     location: 'location',
     paymentMethod: 'paymentMethod',
+    paymentStatus: 'paymentStatus',
     bookingAmount: 'bookingAmount',
-    bookingPriceLabel: 'bookingPriceLabel'
+    bookingPriceLabel: 'bookingPriceLabel',
+    customerEmail: 'customerEmail',
+    bookingTime: 'bookingTime'
   };
 
   const SESSION_DURATION_MS = 30 * 60 * 1000;
@@ -85,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const clearAuthState = () => {
-    [AUTH_KEYS.active, AUTH_KEYS.loginTime, AUTH_KEYS.sessionExpiry, AUTH_KEYS.mobile, AUTH_KEYS.name, AUTH_KEYS.city, AUTH_KEYS.bookingId, AUTH_KEYS.selectedService, AUTH_KEYS.address, AUTH_KEYS.date, AUTH_KEYS.time, AUTH_KEYS.location, AUTH_KEYS.paymentMethod, AUTH_KEYS.bookingAmount, AUTH_KEYS.bookingPriceLabel].forEach((key) => localStorage.removeItem(key));
+    [AUTH_KEYS.active, AUTH_KEYS.loginTime, AUTH_KEYS.sessionExpiry, AUTH_KEYS.mobile, AUTH_KEYS.name, AUTH_KEYS.city, AUTH_KEYS.bookingId, AUTH_KEYS.selectedService, AUTH_KEYS.address, AUTH_KEYS.date, AUTH_KEYS.time, AUTH_KEYS.location, AUTH_KEYS.paymentMethod, AUTH_KEYS.paymentStatus, AUTH_KEYS.bookingAmount, AUTH_KEYS.bookingPriceLabel, AUTH_KEYS.customerEmail, AUTH_KEYS.bookingTime].forEach((key) => localStorage.removeItem(key));
   };
 
   const saveAuthSession = (mobile) => {
@@ -374,6 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const address = document.getElementById('address');
     const date = document.getElementById('date');
     const time = document.getElementById('time');
+    const customerEmailField = document.getElementById('customerEmail');
     const serviceNameEl = document.getElementById('bookingServiceName');
     const servicePriceEl = document.getElementById('bookingPriceLabel');
 
@@ -419,6 +423,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const bookingId = `UC-${Math.floor(10000 + Math.random() * 90000)}`;
       const serviceValue = serviceField?.value || initialService;
+      const customerEmail = customerEmailField?.value.trim() || '';
+      const bookingTime = new Date().toLocaleString();
       const booking = {
         id: bookingId,
         service: serviceValue,
@@ -428,7 +434,11 @@ document.addEventListener('DOMContentLoaded', () => {
         city: localStorage.getItem(AUTH_KEYS.city) || 'Not provided',
         mobile: localStorage.getItem(AUTH_KEYS.mobile) || 'N/A',
         customerName: localStorage.getItem(AUTH_KEYS.name) || 'Guest',
-        createdAt: new Date().toLocaleString()
+        customerEmail,
+        paymentMethod: 'Pending selection',
+        paymentStatus: 'Pending',
+        bookingTime,
+        createdAt: bookingTime
       };
 
       const bookingAmount = getServiceAmount(serviceValue);
@@ -442,13 +452,10 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.setItem(AUTH_KEYS.bookingAmount, String(bookingAmount));
       localStorage.setItem(AUTH_KEYS.bookingPriceLabel, bookingPriceLabel);
       localStorage.setItem(AUTH_KEYS.paymentMethod, 'Pending selection');
-      saveBookingHistory(booking);
-      sendBookingNotificationEmail({
-        ...booking,
-        amount: bookingPriceLabel,
-        paymentMethod: 'Pending selection'
-      });
-      showToast('Booking confirmed. Continue to payment.', 'success');
+      localStorage.setItem(AUTH_KEYS.paymentStatus, 'Pending');
+      localStorage.setItem(AUTH_KEYS.customerEmail, customerEmail);
+      localStorage.setItem(AUTH_KEYS.bookingTime, bookingTime);
+      showToast('Booking saved. Continue to payment.', 'success');
       window.setTimeout(() => window.location.href = 'payment.html', 400);
     });
   };
@@ -506,29 +513,50 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (confirmButton) {
-      confirmButton.addEventListener('click', () => {
+      confirmButton.addEventListener('click', async () => {
         const selectedPayment = document.querySelector('input[name="payment"]:checked');
         if (!selectedPayment) {
           showToast('Please choose a payment method.', 'error');
           return;
         }
+
         const paymentMethod = selectedPayment.value;
-        localStorage.setItem(AUTH_KEYS.paymentMethod, paymentMethod);
-        sendBookingNotificationEmail({
-          id: localStorage.getItem(AUTH_KEYS.bookingId) || 'UC-1001',
+        const bookingId = localStorage.getItem(AUTH_KEYS.bookingId) || 'UC-1001';
+        const bookingTime = localStorage.getItem(AUTH_KEYS.bookingTime) || new Date().toLocaleString();
+        const bookingRecord = {
+          id: bookingId,
           service: localStorage.getItem(AUTH_KEYS.selectedService) || 'Chimney Basic Cleaning',
           address: localStorage.getItem(AUTH_KEYS.address) || 'Not provided',
           date: localStorage.getItem(AUTH_KEYS.date) || 'Today',
           time: localStorage.getItem(AUTH_KEYS.time) || 'As scheduled',
           mobile: localStorage.getItem(AUTH_KEYS.mobile) || 'N/A',
           customerName: localStorage.getItem(AUTH_KEYS.name) || 'Guest',
+          customerEmail: localStorage.getItem(AUTH_KEYS.customerEmail) || '',
           amount: localStorage.getItem(AUTH_KEYS.bookingPriceLabel) || localStorage.getItem(AUTH_KEYS.bookingAmount) || '₹599',
-          paymentMethod
-        });
-        showToast('Payment selected. Your booking is confirmed.', 'success');
-        window.setTimeout(() => {
-          window.location.href = 'success.html';
-        }, 400);
+          paymentMethod,
+          paymentStatus: 'Completed',
+          bookingTime,
+          createdAt: bookingTime
+        };
+
+        localStorage.setItem(AUTH_KEYS.paymentMethod, paymentMethod);
+        localStorage.setItem(AUTH_KEYS.paymentStatus, 'Completed');
+        localStorage.setItem(AUTH_KEYS.bookingTime, bookingTime);
+        saveBookingHistory(bookingRecord);
+
+        showLoading('Finalizing your booking...');
+        try {
+          await sendBookingConfirmationEmails(bookingRecord);
+          showToast('Payment received. Your booking is confirmed.', 'success');
+        } catch (error) {
+          console.error('Unable to send booking emails.', error);
+          showToast('Booking confirmed. Email delivery could not be completed automatically.', 'error');
+        } finally {
+          hideLoading();
+          window.setTimeout(() => {
+            window.location.href = 'success.html';
+          }, 400);
+        }
       });
     }
   };
@@ -559,29 +587,50 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   };
 
-  const sendBookingNotificationEmail = (booking) => {
+  const sendBookingConfirmationEmails = async (booking) => {
+    const emailService = window.UrbanChimneyEmail;
     const customerName = booking.customerName || localStorage.getItem(AUTH_KEYS.name) || 'Guest';
     const mobileNumber = booking.mobile || localStorage.getItem(AUTH_KEYS.mobile) || 'N/A';
     const amount = booking.amount || localStorage.getItem(AUTH_KEYS.bookingPriceLabel) || localStorage.getItem(AUTH_KEYS.bookingAmount) || getServicePriceLabel(booking.service);
     const paymentMethod = booking.paymentMethod || localStorage.getItem(AUTH_KEYS.paymentMethod) || 'Pending selection';
-    const subject = `Urban Chimney Booking Confirmation - ${booking.id}`;
-    const body = [
-      `Customer Name: ${customerName}`,
-      `Mobile Number: ${mobileNumber}`,
-      `Selected Service: ${booking.service}`,
-      `Booking Date: ${booking.date}`,
-      `Booking Time: ${booking.time}`,
-      `Address: ${booking.address}`,
-      `Payment Method: ${paymentMethod}`,
-      `Amount: ${amount}`,
-      `Booking ID: ${booking.id}`
-    ].join('%0A');
+    const bookingTime = booking.bookingTime || localStorage.getItem(AUTH_KEYS.bookingTime) || new Date().toLocaleString();
+    const paymentStatus = booking.paymentStatus || localStorage.getItem(AUTH_KEYS.paymentStatus) || 'Completed';
 
-    const mailtoLink = `mailto:${encodeURIComponent(OWNER_CONTACT.email)}?subject=${encodeURIComponent(subject)}&body=${body}`;
-    try {
-      window.location.href = mailtoLink;
-    } catch (error) {
-      console.warn('Unable to open mail client.', error);
+    const bookingPayload = {
+      customerName,
+      mobile: mobileNumber,
+      address: booking.address || localStorage.getItem(AUTH_KEYS.address) || 'Not provided',
+      service: booking.service || localStorage.getItem(AUTH_KEYS.selectedService) || 'Chimney Cleaning',
+      date: booking.date || localStorage.getItem(AUTH_KEYS.date) || 'Today',
+      time: booking.time || localStorage.getItem(AUTH_KEYS.time) || 'As scheduled',
+      paymentMethod,
+      paymentStatus,
+      id: booking.id || localStorage.getItem(AUTH_KEYS.bookingId) || 'UC-1001',
+      bookingTime,
+      customerEmail: booking.customerEmail || localStorage.getItem(AUTH_KEYS.customerEmail) || '',
+      createdAt: bookingTime
+    };
+
+    if (!emailService || typeof emailService.buildEmailParams !== 'function' || typeof emailService.buildCustomerEmailParams !== 'function') {
+      throw new Error('Email service helper is unavailable.');
+    }
+
+    if (!emailService.isConfigured()) {
+      console.warn('EmailJS is not configured yet. Update the placeholder values in email-service.js before deployment.');
+      return;
+    }
+
+    if (!window.emailjs || typeof window.emailjs.init !== 'function' || typeof window.emailjs.send !== 'function') {
+      throw new Error('EmailJS SDK is not available.');
+    }
+
+    window.emailjs.init(emailService.EMAILJS_CONFIG.publicKey);
+    const ownerEmail = emailService.buildEmailParams(bookingPayload);
+    await window.emailjs.send(emailService.EMAILJS_CONFIG.serviceId, emailService.EMAILJS_CONFIG.templateId, ownerEmail.params);
+
+    if (bookingPayload.customerEmail) {
+      const customerEmail = emailService.buildCustomerEmailParams(bookingPayload);
+      await window.emailjs.send(emailService.EMAILJS_CONFIG.serviceId, emailService.EMAILJS_CONFIG.templateId, customerEmail.params);
     }
   };
 

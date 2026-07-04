@@ -353,6 +353,14 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
 .toast.error { background: linear-gradient(135deg, #ef4444, #b91c1c); }
 .toast.info { background: linear-gradient(135deg, var(--primary), var(--accent)); }
 
+.success-page { min-height: 100vh; display: flex; flex-direction: column; }
+.success-page .page-shell { flex: 1; display: flex; align-items: center; justify-content: center; padding: 24px 20px 60px; }
+.success-card { width: min(100%, 760px); text-align: center; }
+.success-badge {
+  width: 76px; height: 76px; margin: 0 auto 16px; border-radius: 50%; display: grid; place-items: center;
+  background: linear-gradient(135deg, rgba(22, 93, 156, 0.12), rgba(249, 115, 22, 0.16)); color: var(--accent);
+  font-size: 2rem;
+}
 .footer { text-align: center; padding: 0 20px 36px; color: var(--muted); margin-top: 20px; }
 .footer-brand { display: inline-flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 8px; font-weight: 700; color: var(--primary-dark); }
 .footer-brand img { width: 40px; height: 40px; border-radius: 12px; padding: 3px; background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow); object-fit: contain; }
