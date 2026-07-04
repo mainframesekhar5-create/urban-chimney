@@ -674,27 +674,36 @@ document.addEventListener('DOMContentLoaded', () => {
   const renderSuccessPage = () => {
     const bookingIdEl = document.getElementById('successBookingId');
     const customerNameEl = document.getElementById('successCustomerName');
+    const mobileEl = document.getElementById('successMobile');
     const serviceEl = document.getElementById('successService');
     const paymentEl = document.getElementById('successPayment');
     const dateEl = document.getElementById('successDate');
     const timeEl = document.getElementById('successTime');
+    const addressEl = document.getElementById('successAddress');
+    const statusEl = document.getElementById('successStatus');
     const amountEl = document.getElementById('successAmount');
-    if (!bookingIdEl && !customerNameEl && !serviceEl && !paymentEl && !dateEl && !timeEl && !amountEl) return;
+    if (!bookingIdEl && !customerNameEl && !mobileEl && !serviceEl && !paymentEl && !dateEl && !timeEl && !addressEl && !statusEl && !amountEl) return;
 
     const bookingId = localStorage.getItem(AUTH_KEYS.bookingId) || 'UC-1001';
     const customerName = localStorage.getItem(AUTH_KEYS.name) || 'Guest';
+    const mobile = localStorage.getItem(AUTH_KEYS.mobile) || 'N/A';
     const service = localStorage.getItem(AUTH_KEYS.selectedService) || 'Chimney Cleaning';
     const payment = localStorage.getItem(AUTH_KEYS.paymentMethod) || 'UPI';
     const date = localStorage.getItem(AUTH_KEYS.date) || 'Today';
     const time = localStorage.getItem(AUTH_KEYS.time) || 'As scheduled';
+    const address = localStorage.getItem(AUTH_KEYS.address) || 'Not provided';
+    const status = localStorage.getItem(AUTH_KEYS.paymentStatus) || 'Completed';
     const amount = localStorage.getItem(AUTH_KEYS.bookingPriceLabel) || localStorage.getItem(AUTH_KEYS.bookingAmount) || getServicePriceLabel(service);
 
     if (bookingIdEl) bookingIdEl.textContent = bookingId;
     if (customerNameEl) customerNameEl.textContent = customerName;
+    if (mobileEl) mobileEl.textContent = mobile;
     if (serviceEl) serviceEl.textContent = service;
     if (paymentEl) paymentEl.textContent = payment;
     if (dateEl) dateEl.textContent = date;
     if (timeEl) timeEl.textContent = time;
+    if (addressEl) addressEl.textContent = address;
+    if (statusEl) statusEl.textContent = status;
     if (amountEl) amountEl.textContent = amount;
 
     window.setTimeout(animateSuccessScreen, 120);
@@ -912,21 +921,66 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!button) return;
 
     button.addEventListener('click', () => {
-      const receipt = [
-        'Urban Chimney Receipt',
-        `Booking ID: ${localStorage.getItem(AUTH_KEYS.bookingId) || 'UC-1001'}`,
-        `Customer: ${localStorage.getItem(AUTH_KEYS.name) || 'Guest'}`,
-        `Service: ${localStorage.getItem(AUTH_KEYS.selectedService) || 'Chimney Basic Cleaning'}`,
-        `Date: ${localStorage.getItem(AUTH_KEYS.date) || 'Today'}`,
-        `Time: ${localStorage.getItem(AUTH_KEYS.time) || 'As scheduled'}`,
-        `Address: ${localStorage.getItem(AUTH_KEYS.address) || 'Not provided'}`,
-        `Payment: ${localStorage.getItem(AUTH_KEYS.paymentMethod) || 'UPI'}`,
-        `Amount: ${localStorage.getItem(AUTH_KEYS.bookingPriceLabel) || localStorage.getItem(AUTH_KEYS.bookingAmount) || '₹599'}`
-      ].join('\n');
-      const blob = new Blob([receipt], { type: 'text/plain;charset=utf-8' });
+      const bookingId = localStorage.getItem(AUTH_KEYS.bookingId) || 'UC-1001';
+      const customerName = localStorage.getItem(AUTH_KEYS.name) || 'Guest';
+      const mobile = localStorage.getItem(AUTH_KEYS.mobile) || 'N/A';
+      const service = localStorage.getItem(AUTH_KEYS.selectedService) || 'Chimney Basic Cleaning';
+      const date = localStorage.getItem(AUTH_KEYS.date) || 'Today';
+      const time = localStorage.getItem(AUTH_KEYS.time) || 'As scheduled';
+      const address = localStorage.getItem(AUTH_KEYS.address) || 'Not provided';
+      const paymentMethod = localStorage.getItem(AUTH_KEYS.paymentMethod) || 'UPI';
+      const paymentStatus = localStorage.getItem(AUTH_KEYS.paymentStatus) || 'Completed';
+      const amount = localStorage.getItem(AUTH_KEYS.bookingPriceLabel) || localStorage.getItem(AUTH_KEYS.bookingAmount) || '₹599';
+      const receiptMarkup = `
+        <div class="receipt-shell">
+          <div class="receipt-card">
+            <div class="receipt-logo">
+              <span class="receipt-logo-mark">UC</span>
+              <div>
+                <div>Urban Chimney</div>
+                <div class="receipt-subtitle">Booking Receipt</div>
+              </div>
+            </div>
+            <h2 class="receipt-title">Booking Receipt</h2>
+            <p class="receipt-subtitle">Professional service confirmation for your chimney care needs.</p>
+            <div class="receipt-section">
+              <h3>Booking ID</h3>
+              <div class="receipt-row"><span class="receipt-label">Booking ID</span><span class="receipt-value">${bookingId}</span></div>
+            </div>
+            <div class="receipt-section">
+              <h3>Customer Details</h3>
+              <div class="receipt-row"><span class="receipt-label">Customer Name</span><span class="receipt-value">${customerName}</span></div>
+              <div class="receipt-row"><span class="receipt-label">Mobile Number</span><span class="receipt-value">${mobile}</span></div>
+            </div>
+            <div class="receipt-section">
+              <h3>Service Details</h3>
+              <div class="receipt-row"><span class="receipt-label">Service</span><span class="receipt-value">${service}</span></div>
+              <div class="receipt-row"><span class="receipt-label">Address</span><span class="receipt-value">${address}</span></div>
+            </div>
+            <div class="receipt-section">
+              <h3>Payment Details</h3>
+              <div class="receipt-row"><span class="receipt-label">Payment Method</span><span class="receipt-value">${paymentMethod}</span></div>
+              <div class="receipt-row"><span class="receipt-label">Booking Status</span><span class="receipt-value">${paymentStatus}</span></div>
+            </div>
+            <div class="receipt-section">
+              <h3>Booking Date &amp; Time</h3>
+              <div class="receipt-row"><span class="receipt-label">Booking Date</span><span class="receipt-value">${date}</span></div>
+              <div class="receipt-row"><span class="receipt-label">Booking Time</span><span class="receipt-value">${time}</span></div>
+            </div>
+            <div class="receipt-section">
+              <h3>Total Amount</h3>
+              <div class="receipt-row"><span class="receipt-label">Amount</span><span class="receipt-value">${amount}</span></div>
+            </div>
+            <div class="receipt-footer">
+              <p>Thank you for choosing Urban Chimney.</p>
+              <p>Customer Support: +91 90000 12345</p>
+            </div>
+          </div>
+        </div>`;
+      const blob = new Blob([receiptMarkup], { type: 'text/html;charset=utf-8' });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
-      link.download = 'urban-chimney-receipt.txt';
+      link.download = 'urban-chimney-receipt.html';
       link.click();
       URL.revokeObjectURL(link.href);
       showToast('Receipt downloaded successfully.', 'success');
