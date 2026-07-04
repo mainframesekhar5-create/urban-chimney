@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment | UrbanChimney</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body class="payment-page">
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">UC</span>
+        <span>UrbanChimney</span>
+      </a>
+      <nav class="nav-links">
+        <a href="home.html">Home</a>
+        <a href="services.html">Services</a>
+        <a href="spare-parts.html">Spare Parts</a>
+        <a href="track.html">Tracking</a>
+        <a href="profile.html">Profile</a>
+        <a href="admin.html">Admin</a>
+        <button type="button" id="logoutButton">Logout</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell">
+    <section class="hero-banner">
+      <div class="hero-card">
+        <span class="hero-badge"><i class="fa-solid fa-lock"></i> Secure payments</span>
+        <h1>Choose your preferred payment method</h1>
+        <p>UPI, digital wallets, or cash after service. Everything is protected and simple.</p>
+        <div class="inline-actions">
+          <a class="btn btn-secondary" href="booking.html">Back to booking</a>
+        </div>
+      </div>
+      <div class="hero-image">
+        <img src="https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=crop&w=1200&q=80" alt="Secure online payment illustration">
+      </div>
+    </section>
+
+    <section class="form-card premium-card" style="max-width: 860px; margin: 0 auto;">
+      <div class="section-title">
+        <div>
+          <h2>Payment options</h2>
+          <p class="muted">Choose a payment method and continue to booking confirmation.</p>
+        </div>
+      </div>
+      <div class="notice">Booking amount: <strong id="paymentAmountLabel">₹599</strong></div>
+      <div class="payment-options">
+        <label class="payment-option selected">
+          <div class="payment-option-main">
+            <div class="payment-icon"><i class="fa-solid fa-qrcode"></i></div>
+            <div>
+              <strong>UPI</strong>
+              <p class="muted">UPI ID: 9701434006-2@OKAXIS</p>
+            </div>
+          </div>
+          <div class="payment-option-actions">
+            <button class="btn btn-secondary btn-small" type="button" data-copy="9701434006-2@OKAXIS">Copy UPI</button>
+            <input type="radio" name="payment" value="UPI" checked>
+          </div>
+        </label>
+
+        <label class="payment-option">
+          <div class="payment-option-main">
+            <div class="payment-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+            <div>
+              <strong>PhonePe</strong>
+              <p class="muted">Mobile Number: 9701434006</p>
+            </div>
+          </div>
+          <div class="payment-option-actions">
+            <button class="btn btn-secondary btn-small" type="button" data-open="phonepe">Open PhonePe</button>
+            <input type="radio" name="payment" value="PhonePe">
+          </div>
+        </label>
+
+        <label class="payment-option">
+          <div class="payment-option-main">
+            <div class="payment-icon"><i class="fa-brands fa-google-pay"></i></div>
+            <div>
+              <strong>Google Pay</strong>
+              <p class="muted">Mobile Number: 9701434006</p>
+            </div>
+          </div>
+          <div class="payment-option-actions">
+            <button class="btn btn-secondary btn-small" type="button" data-open="gpay">Open GPay</button>
+            <input type="radio" name="payment" value="Google Pay">
+          </div>
+        </label>
+
+        <label class="payment-option">
+          <div class="payment-option-main">
+            <div class="payment-icon"><i class="fa-solid fa-money-bill-wave"></i></div>
+            <div>
+              <strong>Cash</strong>
+              <p class="muted">Pay after service completion.</p>
+            </div>
+          </div>
+          <div class="payment-option-actions">
+            <span class="payment-note">Cash option</span>
+            <input type="radio" name="payment" value="Cash">
+          </div>
+        </label>
+      </div>
+
+      <div class="inline-actions">
+        <button class="btn btn-primary" type="button" id="confirmPaymentButton">Confirm Payment</button>
+        <a class="btn btn-secondary" href="booking.html">Back</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-brand">
+      <span class="brand-mark">UC</span>
+      <span>UrbanChimney</span>
+    </div>
+    <p>UrbanChimney © 2026 • Safe transactions.</p>
+  </footer>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings | UrbanChimney</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body class="settings-page">
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="home.html">
+        <span class="brand-mark">UC</span>
+        <span>UrbanChimney</span>
+      </a>
+      <nav class="nav-links">
+        <a href="home.html">Home</a>
+        <a href="services.html">Services</a>
+        <a href="spare-parts.html">Spare Parts</a>
+        <a href="track.html">Tracking</a>
+        <a href="profile.html">Profile</a>
+        <a href="settings.html" class="active">Settings</a>
+        <a href="admin.html">Admin</a>
+        <button type="button" id="logoutButton">Logout</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell">
+    <section class="form-card">
+      <div class="section-title">
+        <div>
+          <h2>Account settings</h2>
+          <p class="muted">Manage your account preferences and notification choices.</p>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="full-width">
+          <label for="settingsName">Name</label>
+          <input type="text" id="settingsName" value="Guest" readonly>
+        </div>
+        <div class="full-width">
+          <label for="settingsMobile">Mobile</label>
+          <input type="text" id="settingsMobile" value="Not available" readonly>
+        </div>
+        <div class="full-width">
+          <label for="settingsCity">City</label>
+          <input type="text" id="settingsCity" value="Not provided" readonly>
+        </div>
+      </div>
+
+      <div class="section-title" style="margin-top: 32px;">
+        <div>
+          <h2>Notifications</h2>
+          <p class="muted">Stay updated on bookings, offers, and service status.</p>
+        </div>
+      </div>
+      <div class="card" style="padding: 20px;">
+        <div class="history-item">
+          <div>
+            <strong>Daily booking summary</strong>
+            <p>Receive a summary of your upcoming services each morning.</p>
+          </div>
+          <span class="btn btn-secondary" style="padding: 10px 14px;">Enabled</span>
+        </div>
+        <div class="history-item">
+          <div>
+            <strong>Promotions</strong>
+            <p>Get notified of seasonal offers and priority scheduling.</p>
+          </div>
+          <span class="btn btn-secondary" style="padding: 10px 14px;">Enabled</span>
+        </div>
+      </div>
+
+      <div class="inline-actions" style="margin-top: 24px;">
+        <a class="btn btn-primary" href="home.html">Back home</a>
+        <a class="btn btn-secondary" href="profile.html">Profile</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-brand">
+      <span class="brand-mark">UC</span>
+      <span>UrbanChimney</span>
+    </div>
+    <p>UrbanChimney © 2026 • Account settings.</p>
+  </footer>
+  <script src="app.js"></script>
+</body>
+</html>

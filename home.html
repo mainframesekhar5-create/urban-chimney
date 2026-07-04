@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UrbanChimney | Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body class="home-page">
+  <header class="site-header">
+    <div class="header-inner">
+      <button class="menu-toggle" id="drawerToggle" aria-label="Open navigation menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <a class="brand" href="home.html">
+        <span class="brand-mark">UC</span>
+        <span>UrbanChimney</span>
+      </a>
+    </div>
+  </header>
+
+  <div class="drawer-overlay" id="drawerOverlay" aria-hidden="true"></div>
+  <aside class="side-drawer" id="sideDrawer" aria-hidden="true">
+    <div class="drawer-header">
+      <div>
+        <p class="drawer-brand">UrbanChimney</p>
+        <p class="drawer-subtitle">Home service dashboard</p>
+      </div>
+      <button class="drawer-close" id="drawerClose" aria-label="Close navigation menu"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <nav class="drawer-nav" aria-label="Main navigation">
+      <ul class="drawer-list">
+        <li><a class="drawer-item" href="home.html"><i class="fa-solid fa-house"></i><span>Home</span></a></li>
+        <li><a class="drawer-item" href="profile.html"><i class="fa-solid fa-user"></i><span>Profile</span></a></li>
+        <li><a class="drawer-item" href="services.html"><i class="fa-solid fa-hands-holding-circle"></i><span>Services</span></a></li>
+        <li><a class="drawer-item" href="spare-parts.html"><i class="fa-solid fa-box-open"></i><span>Spare Parts</span></a></li>
+        <li><a class="drawer-item" href="bookings.html"><i class="fa-solid fa-calendar-check"></i><span>My Bookings</span></a></li>
+        <li><a class="drawer-item" href="track.html"><i class="fa-solid fa-location-dot"></i><span>Tracking</span></a></li>
+        <li><a class="drawer-item" href="settings.html"><i class="fa-solid fa-gear"></i><span>Settings</span></a></li>
+        <li><a class="drawer-item" href="admin.html"><i class="fa-solid fa-user-shield"></i><span>Admin</span></a></li>
+        <li><button class="drawer-item drawer-logout" type="button" data-action="logout"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></button></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main class="page-shell">
+    <section class="hero-banner">
+      <div class="hero-card">
+        <span class="hero-badge"><i class="fa-solid fa-bolt"></i> Urban Company-style convenience</span>
+        <h1 id="welcomeName">Welcome back</h1>
+        <p id="welcomeMobile">Your premium home service is just a tap away.</p>
+        <div class="inline-actions">
+          <a class="btn btn-secondary" href="booking.html"><i class="fa-solid fa-calendar-check"></i> Book now</a>
+          <a class="btn btn-success" href="track.html"><i class="fa-solid fa-location-dot"></i> Track service</a>
+        </div>
+        <div class="dashboard-highlight" style="margin-top: 16px;">
+          <div>
+            <strong id="bookingSnapshot">Your next service is ready to schedule.</strong>
+            <p class="muted">Smart reminders, live updates, and transparent billing.</p>
+          </div>
+          <div class="btn btn-secondary">Verified</div>
+        </div>
+      </div>
+      <div class="hero-image">
+        <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1200&q=80" alt="Professional home service technician at work">
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title">
+        <h2>Choose a category</h2>
+      </div>
+      <div class="service-grid home-grid">
+        <article class="card service-card premium-card">
+          <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=900&q=80" alt="Professional chimney cleaning service">
+          <div class="card-body">
+            <h3>Services</h3>
+            <p>Book expert chimney cleaning and repair services with transparent pricing and fast scheduling.</p>
+            <div class="card-footer">
+              <a class="btn btn-primary" href="services.html">Explore Services</a>
+            </div>
+          </div>
+        </article>
+        <article class="card service-card premium-card">
+          <img src="https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=900&q=80" alt="Chimney spare parts and accessories">
+          <div class="card-body">
+            <h3>Spare Parts</h3>
+            <p>Find genuine chimney filters, motors, switches, and lights for quick replacement.</p>
+            <div class="card-footer">
+              <a class="btn btn-secondary" href="spare-parts.html">Shop Spare Parts</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="contact-panel">
+      <div class="section-title">
+        <div>
+          <h2>Contact details</h2>
+          <p class="muted">Reach out directly for urgent bookings and customer updates.</p>
+        </div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-info">
+          <div class="contact-icon"><i class="fa-solid fa-phone"></i></div>
+          <div>
+            <strong>Phone</strong>
+            <p>+91 90000 12345</p>
+          </div>
+        </div>
+        <div class="contact-info">
+          <div class="contact-icon"><i class="fa-solid fa-envelope"></i></div>
+          <div>
+            <strong>Email</strong>
+            <p>contact@urbanchimney.com</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-brand">
+      <span class="brand-mark">UC</span>
+      <span>UrbanChimney</span>
+    </div>
+    <p>UrbanChimney © 2026 • Crafted for modern homes.</p>
+  </footer>
+  <script src="app.js"></script>
+</body>
+</html>

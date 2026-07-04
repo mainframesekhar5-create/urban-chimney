@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Service - UrbanChimney</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body class="booking-page">
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">UC</span>
+        <span>UrbanChimney</span>
+      </a>
+      <nav class="nav-links">
+        <a href="home.html">Home</a>
+        <a href="services.html">Services</a>
+        <a href="spare-parts.html">Spare Parts</a>
+        <a href="track.html">Tracking</a>
+        <a href="profile.html">Profile</a>
+        <a href="admin.html">Admin</a>
+        <button type="button" id="logoutButton">Logout</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell">
+    <div class="booking-shell">
+      <section class="summary-card premium-card">
+        <div class="section-title">
+          <div>
+            <h2>Booking overview</h2>
+            <p class="muted">Simple booking with the selected chimney service already prefilled.</p>
+          </div>
+        </div>
+        <div class="summary-grid">
+          <div class="stat-card">
+            <strong id="bookingServiceName">Chimney Basic Cleaning</strong>
+            <span class="muted">Selected service</span>
+          </div>
+          <div class="stat-card">
+            <strong id="bookingPriceLabel">₹599</strong>
+            <span class="muted">Service price</span>
+          </div>
+        </div>
+        <div class="notice">Your booking will be confirmed instantly and moved to the payment page.</div>
+      </section>
+
+      <section class="form-card premium-card">
+        <div class="section-title">
+          <div>
+            <h2>Book your chimney service</h2>
+            <p class="muted">Only need to fill the essentials to confirm.</p>
+          </div>
+          <a class="btn btn-secondary" href="services.html">Back</a>
+        </div>
+        <form id="bookingForm">
+          <input type="hidden" id="service" name="service">
+          <input type="hidden" id="servicePrice" name="servicePrice">
+          <div class="form-grid">
+            <div>
+              <label for="date">Date</label>
+              <input type="date" id="date" name="date" required>
+            </div>
+            <div>
+              <label for="time">Time</label>
+              <input type="time" id="time" name="time" required>
+            </div>
+            <div>
+              <label for="customerEmail">Email</label>
+              <input type="email" id="customerEmail" name="customerEmail" placeholder="Enter your email" required>
+            </div>
+            <div class="full-width">
+              <label for="address">Address</label>
+              <textarea id="address" name="address" rows="4" placeholder="Enter complete address" required></textarea>
+            </div>
+            <div class="full-width">
+              <label for="location">Location link</label>
+              <input type="text" id="location" name="location" placeholder="Location will appear here" readonly>
+            </div>
+            <div class="full-width">
+              <button class="btn btn-secondary" type="button" id="locationButton"><i class="fa-solid fa-location-crosshairs"></i> Get my location</button>
+            </div>
+          </div>
+          <div class="inline-actions">
+            <button class="btn btn-primary" type="submit">Confirm Booking</button>
+          </div>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-brand">
+      <span class="brand-mark">UC</span>
+      <span>UrbanChimney</span>
+    </div>
+    <p>UrbanChimney © 2026 • Easy booking experience.</p>
+  </footer>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booking Successful</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="success-page">
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">UC</span>
+        <span>UrbanChimney</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="page-shell">
+    <section class="form-card success-card">
+      <div class="success-badge"><i class="fa-solid fa-check"></i></div>
+      <h2>Booking confirmed</h2>
+      <p class="muted">Your service request is ready and a trusted technician will contact you shortly.</p>
+      <div class="notice">
+        <strong>Booking ID:</strong> <span id="successBookingId"></span>
+      </div>
+      <div class="success-details">
+        <div class="detail-item"><span class="detail-label">Service</span><span id="successService"></span></div>
+        <div class="detail-item"><span class="detail-label">Date</span><span id="successDate"></span></div>
+        <div class="detail-item"><span class="detail-label">Time</span><span id="successTime"></span></div>
+        <div class="detail-item"><span class="detail-label">Address</span><span id="successAddress"></span></div>
+        <div class="detail-item"><span class="detail-label">Payment</span><span id="successPayment"></span></div>
+        <div class="detail-item"><span class="detail-label">Amount</span><span id="successAmount"></span></div>
+      </div>
+      <div class="inline-actions" style="justify-content: center;">
+        <button class="btn btn-primary" type="button" id="downloadReceiptButton">Download receipt</button>
+        <a class="btn btn-secondary" href="home.html">Back home</a>
+        <a class="btn btn-secondary" href="track.html">Track booking</a>
+      </div>
+    </section>
+  </main>
+  <footer class="footer">
+    <div class="footer-brand">
+      <span class="brand-mark">UC</span>
+      <span>UrbanChimney</span>
+    </div>
+    <p>UrbanChimney © 2026 • Trusted citywide service.</p>
+  </footer>
+  <script src="app.js"></script>
+</body>
+</html>

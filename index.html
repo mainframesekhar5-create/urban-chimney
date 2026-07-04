@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UrbanChimney | Premium Home Services</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body class="auth-page">
+  <header class="site-header auth-header">
+    <div class="header-inner auth-header-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">UC</span>
+        <span>UrbanChimney</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="page-shell auth-shell auth-only-shell">
+    <section class="form-card login-card">
+      <div class="login-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+      <h2>Welcome back</h2>
+      <form id="loginForm">
+        <div class="form-grid">
+          <div class="full-width">
+            <label for="mobile">Mobile number</label>
+            <input type="tel" id="mobile" maxlength="10" placeholder="Enter 10-digit mobile number" required autocomplete="tel">
+          </div>
+          <div class="full-width">
+            <button class="btn btn-primary" type="button" id="sendOtpButton" disabled>Send OTP</button>
+          </div>
+          <div class="full-width otp-step" id="otpStep" hidden>
+            <label for="otp">OTP</label>
+            <input type="text" id="otp" maxlength="6" placeholder="Enter 6-digit OTP" autocomplete="one-time-code">
+          </div>
+          <div class="full-width otp-step" id="verifyStep" hidden>
+            <button class="btn btn-success" type="submit" id="verifyOtpButton" disabled>Verify OTP</button>
+          </div>
+        </div>
+        <div id="formMessage" class="form-message" aria-live="polite"></div>
+      </form>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-brand">
+      <span class="brand-mark">UC</span>
+      <span>UrbanChimney</span>
+    </div>
+    <p>UrbanChimney © 2026 • Premium home care, beautifully delivered.</p>
+  </footer>
+  <script src="app.js"></script>
+</body>
+</html>

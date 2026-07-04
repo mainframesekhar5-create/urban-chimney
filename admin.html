@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel | UrbanChimney</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body class="admin-page">
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">UC</span>
+        <span>UrbanChimney</span>
+      </a>
+      <nav class="nav-links">
+        <a href="home.html">Home</a>
+        <a href="booking.html">Booking</a>
+        <a href="payment.html">Payment</a>
+        <a href="track.html">Tracking</a>
+        <a href="profile.html">Profile</a>
+        <a href="admin.html" class="active">Admin</a>
+        <button type="button" id="logoutButton">Logout</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-shell">
+    <section class="form-card">
+      <div class="section-title">
+        <div>
+          <h2>Admin overview</h2>
+          <p class="muted">Monitor recent service requests and keep the demo data tidy.</p>
+        </div>
+        <button class="btn btn-secondary" type="button" id="resetBookingsButton">Reset demo bookings</button>
+      </div>
+      <div class="stats-grid" id="adminStats"></div>
+      <div class="notice" id="adminEmptyState">No bookings recorded yet. New bookings will appear here automatically.</div>
+      <div id="adminBookingsTable" class="admin-table-wrap"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-brand">
+      <span class="brand-mark">UC</span>
+      <span>UrbanChimney</span>
+    </div>
+    <p>UrbanChimney © 2026 • Admin dashboard overview.</p>
+  </footer>
+  <script src="app.js"></script>
+</body>
+</html>
