@@ -21,24 +21,48 @@
 
   <main class="page-shell">
     <section class="form-card success-card">
-      <div class="success-badge"><i class="fa-solid fa-check"></i></div>
-      <h2>Booking Confirmed</h2>
-      <p class="muted">Thank you for choosing Urban Chimney. Our technician will contact you shortly.</p>
-      <div class="notice">
-        <strong>Booking ID:</strong> <span id="successBookingId"></span>
+      <div class="success-hero">
+        <div class="success-badge"><i class="fa-solid fa-check"></i></div>
+        <div>
+          <p class="success-chip">✅ Booking Confirmed Successfully</p>
+          <h1>Your service is on its way</h1>
+          <p class="success-copy">Thank you for choosing Urban Chimney. Your booking has been received successfully. Our technician will contact you shortly.</p>
+        </div>
       </div>
-      <div class="success-details">
-        <div class="detail-item"><span class="detail-label">Service</span><span id="successService"></span></div>
-        <div class="detail-item"><span class="detail-label">Date</span><span id="successDate"></span></div>
-        <div class="detail-item"><span class="detail-label">Time</span><span id="successTime"></span></div>
-        <div class="detail-item"><span class="detail-label">Address</span><span id="successAddress"></span></div>
-        <div class="detail-item"><span class="detail-label">Payment</span><span id="successPayment"></span></div>
-        <div class="detail-item"><span class="detail-label">Amount</span><span id="successAmount"></span></div>
+      <div class="success-summary">
+        <div class="summary-card success-summary-card">
+          <span class="summary-label">Booking ID</span>
+          <strong id="successBookingId"></strong>
+        </div>
+        <div class="summary-card success-summary-card">
+          <span class="summary-label">Customer Name</span>
+          <strong id="successCustomerName"></strong>
+        </div>
+        <div class="summary-card success-summary-card">
+          <span class="summary-label">Selected Service</span>
+          <strong id="successService"></strong>
+        </div>
+        <div class="summary-card success-summary-card">
+          <span class="summary-label">Booking Date</span>
+          <strong id="successDate"></strong>
+        </div>
+        <div class="summary-card success-summary-card">
+          <span class="summary-label">Booking Time</span>
+          <strong id="successTime"></strong>
+        </div>
+        <div class="summary-card success-summary-card">
+          <span class="summary-label">Payment Method</span>
+          <strong id="successPayment"></strong>
+        </div>
+        <div class="summary-card success-summary-card">
+          <span class="summary-label">Amount</span>
+          <strong id="successAmount"></strong>
+        </div>
       </div>
-      <div class="inline-actions" style="justify-content: center;">
-        <button class="btn btn-primary" type="button" id="downloadReceiptButton">Download receipt</button>
-        <a class="btn btn-secondary" href="home.html">Back home</a>
-        <a class="btn btn-secondary" href="track.html">Track booking</a>
+      <div class="success-actions">
+        <button class="btn btn-primary" type="button" id="downloadReceiptButton">Download Receipt</button>
+        <a class="btn btn-secondary" href="track.html">Track Booking</a>
+        <a class="btn btn-secondary" href="home.html">Back to Home</a>
       </div>
     </section>
   </main>

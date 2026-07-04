@@ -408,31 +408,81 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  const playSuccessTone = () => {
+    if (!window.AudioContext && !window.webkitAudioContext) return;
+    try {
+      const context = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = context.createOscillator();
+      const gainNode = context.createGain();
+      oscillator.type = 'triangle';
+      oscillator.frequency.setValueAtTime(880, context.currentTime);
+      gainNode.gain.setValueAtTime(0.0025, context.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.24);
+      oscillator.connect(gainNode);
+      gainNode.connect(context.destination);
+      oscillator.start();
+      oscillator.stop(context.currentTime + 0.24);
+    } catch (error) {
+      console.warn('Success sound not supported.', error);
+    }
+  };
+
+  const createSuccessConfetti = () => {
+    const existing = document.querySelector('.success-confetti');
+    if (existing) existing.remove();
+    const confetti = document.createElement('div');
+    confetti.className = 'success-confetti';
+    const count = 22;
+    for (let i = 0; i < count; i += 1) {
+      const dot = document.createElement('span');
+      dot.className = 'confetti-dot';
+      dot.style.left = `${Math.random() * 100}%`;
+      dot.style.background = `hsl(${110 + Math.random() * 70}, 82%, ${50 + Math.random() * 12}%)`;
+      dot.style.width = `${8 + Math.random() * 8}px`;
+      dot.style.height = dot.style.width;
+      dot.style.animationDuration = `${1.4 + Math.random() * 0.8}s`;
+      dot.style.animationDelay = `${Math.random() * 0.2}s`;
+      dot.style.transform = `rotate(${Math.random() * 360}deg)`;
+      confetti.appendChild(dot);
+    }
+    document.body.appendChild(confetti);
+    window.setTimeout(() => confetti.remove(), 2400);
+  };
+
+  const animateSuccessScreen = () => {
+    const badge = document.querySelector('.success-badge');
+    if (badge) badge.classList.add('success-badge-animate');
+    playSuccessTone();
+    createSuccessConfetti();
+  };
+
   const renderSuccessPage = () => {
     const bookingIdEl = document.getElementById('successBookingId');
+    const customerNameEl = document.getElementById('successCustomerName');
     const serviceEl = document.getElementById('successService');
     const paymentEl = document.getElementById('successPayment');
     const dateEl = document.getElementById('successDate');
     const timeEl = document.getElementById('successTime');
-    const addressEl = document.getElementById('successAddress');
     const amountEl = document.getElementById('successAmount');
-    if (!bookingIdEl && !serviceEl && !paymentEl && !dateEl && !timeEl && !addressEl && !amountEl) return;
+    if (!bookingIdEl && !customerNameEl && !serviceEl && !paymentEl && !dateEl && !timeEl && !amountEl) return;
 
     const bookingId = localStorage.getItem(AUTH_KEYS.bookingId) || 'UC-1001';
+    const customerName = localStorage.getItem(AUTH_KEYS.name) || 'Guest';
     const service = localStorage.getItem(AUTH_KEYS.selectedService) || 'Chimney Cleaning';
     const payment = localStorage.getItem(AUTH_KEYS.paymentMethod) || 'UPI';
     const date = localStorage.getItem(AUTH_KEYS.date) || 'Today';
     const time = localStorage.getItem(AUTH_KEYS.time) || 'As scheduled';
-    const address = localStorage.getItem(AUTH_KEYS.address) || 'Not provided';
     const amount = localStorage.getItem(AUTH_KEYS.bookingPriceLabel) || localStorage.getItem(AUTH_KEYS.bookingAmount) || getServicePriceLabel(service);
 
     if (bookingIdEl) bookingIdEl.textContent = bookingId;
+    if (customerNameEl) customerNameEl.textContent = customerName;
     if (serviceEl) serviceEl.textContent = service;
     if (paymentEl) paymentEl.textContent = payment;
     if (dateEl) dateEl.textContent = date;
     if (timeEl) timeEl.textContent = time;
-    if (addressEl) addressEl.textContent = address;
     if (amountEl) amountEl.textContent = amount;
+
+    window.setTimeout(animateSuccessScreen, 120);
   };
 
   const renderHomeDashboard = () => {

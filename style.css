@@ -366,14 +366,35 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--a
 .toast.error { background: linear-gradient(135deg, #ef4444, #b91c1c); }
 .toast.info { background: linear-gradient(135deg, var(--primary), var(--accent)); }
 
-.success-page { min-height: 100vh; display: flex; flex-direction: column; }
+.success-page { min-height: 100vh; display: flex; flex-direction: column; background: linear-gradient(180deg, #f7fdf8 0%, #ffffff 100%); }
 .success-page .page-shell { flex: 1; display: flex; align-items: center; justify-content: center; padding: 24px 20px 60px; }
-.success-card { width: min(100%, 760px); text-align: center; }
-.success-badge {
-  width: 76px; height: 76px; margin: 0 auto 16px; border-radius: 50%; display: grid; place-items: center;
-  background: linear-gradient(135deg, rgba(22, 93, 156, 0.12), rgba(249, 115, 22, 0.16)); color: var(--accent);
-  font-size: 2rem;
+.success-card { width: min(100%, 840px); max-width: 940px; text-align: left; background: rgba(255,255,255,0.96); border: 1px solid rgba(34,197,94,0.14); box-shadow: 0 40px 90px rgba(15, 42, 70, 0.08); border-radius: 32px; padding: 32px; position: relative; overflow: hidden; }
+.success-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at top right, rgba(34,197,94,0.08), transparent 38%);
+  pointer-events: none;
 }
+.success-hero { display: grid; gap: 20px; grid-template-columns: auto 1fr; align-items: center; margin-bottom: 24px; }
+.success-badge { width: 96px; height: 96px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(135deg, #d1fae5 0%, #22c55e 100%); color: #ffffff; font-size: 2.4rem; box-shadow: 0 20px 36px rgba(34,197,94,0.24); transform: scale(0.8); opacity: 0; }
+.success-badge.success-badge-animate { animation: success-pop 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+@keyframes success-pop { 0% { transform: scale(0.6); opacity: 0; } 60% { transform: scale(1.08); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+.success-chip { display: inline-flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 999px; background: rgba(22, 163, 74, 0.12); color: #166534; font-weight: 700; letter-spacing: 0.01em; margin: 0; }
+.success-hero h1 { margin: 0; font-size: clamp(2rem, 3vw, 2.8rem); line-height: 1.05; color: #111827; }
+.success-copy { margin: 14px 0 0; color: #4b5563; max-width: 620px; }
+.success-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 24px; }
+.success-summary-card { background: #f8fffb; border: 1px solid rgba(34,197,94,0.15); border-radius: 22px; padding: 20px 18px; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.4); }
+.summary-label { display: block; color: #4b5563; margin-bottom: 10px; font-size: 0.9rem; }
+.success-summary-card strong { display: block; color: #111827; font-size: 1.05rem; line-height: 1.4; }
+.success-actions { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-top: 12px; }
+.success-actions .btn { min-width: 200px; }
+.success-actions a.btn { text-decoration: none; }
+.success-message { animation: fade-in-up 0.6s ease both; }
+.success-card, .success-summary-card, .success-actions .btn { animation: fade-in-up 0.5s ease both; }
+@keyframes fade-in-up { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+.success-confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 9999; }
+.confetti-dot { position: absolute; width: 10px; height: 10px; border-radius: 50%; opacity: 0.95; animation: confetti-fall linear forwards; }
+@keyframes confetti-fall { 0% { transform: translateY(-10px) rotate(0deg); opacity: 1; } 100% { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
 .footer { text-align: center; padding: 0 20px 36px; color: var(--muted); margin-top: 20px; }
 .footer-brand { display: inline-flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 8px; font-weight: 700; color: var(--primary-dark); }
 .footer-brand img { width: 40px; height: 40px; border-radius: 12px; padding: 3px; background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow); object-fit: contain; }
