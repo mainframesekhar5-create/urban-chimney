@@ -183,7 +183,10 @@ document.addEventListener('DOMContentLoaded', () => {
     currentLoginMode = mode;
     if (customerModeButton) customerModeButton.classList.toggle('active', mode === 'customer');
     if (ownerModeButton) ownerModeButton.classList.toggle('active', mode === 'owner');
-    if (ownerNotice) ownerNotice.hidden = mode !== 'owner';
+    if (ownerNotice) {
+      ownerNotice.hidden = mode !== 'owner';
+      ownerNotice.classList.toggle('is-visible', mode === 'owner');
+    }
     setFormMessage('', '');
   };
 
