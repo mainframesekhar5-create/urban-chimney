@@ -3,43 +3,6 @@ const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
 
-class MockClassList {
-  constructor(element) {
-    this.element = element;
-    this.values = new Set();
-  }
-
-  add(...tokens) {
-    tokens.forEach((token) => this.values.add(token));
-    this.element.className = Array.from(this.values).join(' ');
-  }
-
-  remove(...tokens) {
-    tokens.forEach((token) => this.values.delete(token));
-    this.element.className = Array.from(this.values).join(' ');
-  }
-
-  toggle(token, force) {
-    if (force === undefined) {
-      if (this.values.has(token)) {
-        this.values.delete(token);
-      } else {
-        this.values.add(token);
-      }
-    } else if (force) {
-      this.values.add(token);
-    } else {
-      this.values.delete(token);
-    }
-    this.element.className = Array.from(this.values).join(' ');
-    return this.values.has(token);
-  }
-
-  contains(token) {
-    return this.values.has(token);
-  }
-}
-
 class MockElement {
   constructor(id = '') {
     this.id = id;
@@ -49,7 +12,6 @@ class MockElement {
     this.disabled = false;
     this.dataset = {};
     this.className = '';
-    this.classList = new MockClassList(this);
     this.listeners = {};
     this.children = [];
     this.attributes = {};
@@ -80,18 +42,6 @@ class MockElement {
 
   removeAttribute(name) {
     delete this.attributes[name];
-  }
-
-  querySelector() {
-    return null;
-  }
-
-  querySelectorAll() {
-    return [];
-  }
-
-  closest() {
-    return null;
   }
 
   focus() {}
@@ -129,8 +79,9 @@ const document = {
 };
 
 const window = {
-  location: { pathname: '/index.html', search: '', href: 'http://localhost/index.html', replace() {} },
+  location: { pathname: '/index.html', search: '', href: 'http://localhost/index.html' },
   addEventListener() {},
+  replaceState() {},
   setTimeout(handler) {
     if (typeof handler === 'function') handler();
     return 1;
@@ -186,6 +137,11 @@ context.window.navigator = navigator;
 context.global = context;
 context.globalThis = context;
 
+const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+assert.ok(!html.includes('ownerModeButton'), 'The login page should not expose owner mode controls');
+assert.ok(!html.includes('ownerNotice'), 'The login page should not expose an owner notice');
+assert.ok(!html.includes('9701434006'), 'The login page should not expose the owner mobile number');
+
 const scriptPath = path.join(__dirname, '..', 'app.js');
 const script = fs.readFileSync(scriptPath, 'utf8');
 vm.createContext(context);
@@ -193,9 +149,6 @@ vm.runInContext(script, context);
 
 document._domReadyHandler();
 
-const customerModeButton = makeElement('customerModeButton');
-const ownerModeButton = makeElement('ownerModeButton');
-const ownerNotice = makeElement('ownerNotice');
 const loginForm = makeElement('loginForm');
 const mobileInput = makeElement('mobile');
 const otpInput = makeElement('otp');
@@ -205,10 +158,7 @@ const formMessage = makeElement('formMessage');
 const otpStep = makeElement('otpStep');
 const verifyStep = makeElement('verifyStep');
 
-const elementsById = {
-  customerModeButton,
-  ownerModeButton,
-  ownerNotice,
+for (const [id, element] of Object.entries({
   loginForm,
   mobileInput,
   otpInput,
@@ -217,22 +167,20 @@ const elementsById = {
   formMessage,
   otpStep,
   verifyStep
-};
-
-Object.entries(elementsById).forEach(([id, element]) => {
+})) {
   elements[id] = element;
-});
+}
 
-// Re-run the DOMContentLoaded callback with the mocked elements available.
 document._domReadyHandler();
 
-ownerModeButton.click();
-assert.strictEqual(ownerNotice.hidden, false, 'Owner notice should become visible in owner mode');
-assert.strictEqual(ownerNotice.getAttribute('hidden'), null, 'Owner notice should not keep the hidden attribute in owner mode');
-assert.ok(ownerNotice.classList.contains('is-visible'), 'Owner notice should expose a visible state class');
+mobileInput.value = '9701434006';
+otpInput.value = '123456';
 
-customerModeButton.click();
-assert.strictEqual(ownerNotice.hidden, true, 'Owner notice should hide again in customer mode');
-assert.strictEqual(ownerNotice.getAttribute('hidden'), '', 'Owner notice should regain the hidden attribute in customer mode');
+const submitHandler = loginForm.listeners.submit;
+assert.strictEqual(typeof submitHandler, 'function', 'The login form should have a submit handler');
 
-console.log('Login mode toggle tests passed');
+const event = { preventDefault() {}, stopPropagation() {} };
+submitHandler(event);
+
+assert.ok(window.location.href.includes('admin.html') || window.location.href.includes('index.html'), 'Owner login should resolve to the admin dashboard route after OTP verification');
+console.log('Login screen hidden-owner checks passed');

@@ -35,7 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let adminSearchQuery = '';
   let adminFilterType = 'today';
-  let currentLoginMode = 'customer';
 
   const clearCustomerSession = () => {
     [AUTH_KEYS.active, AUTH_KEYS.loginTime, AUTH_KEYS.sessionExpiry, AUTH_KEYS.mobile, AUTH_KEYS.name, AUTH_KEYS.city].forEach((key) => localStorage.removeItem(key));
@@ -150,9 +149,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const formMessage = document.getElementById('formMessage');
   const otpStep = document.getElementById('otpStep');
   const verifyStep = document.getElementById('verifyStep');
-  const customerModeButton = document.getElementById('customerModeButton');
-  const ownerModeButton = document.getElementById('ownerModeButton');
-  const ownerNotice = document.getElementById('ownerNotice');
 
   const toggleOtpFields = (visible) => {
     if (otpStep) otpStep.hidden = !visible;
@@ -177,22 +173,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!formMessage) return;
     formMessage.textContent = message;
     formMessage.className = `form-message ${type}`;
-  };
-
-  const setLoginMode = (mode) => {
-    currentLoginMode = mode;
-    if (customerModeButton) customerModeButton.classList.toggle('active', mode === 'customer');
-    if (ownerModeButton) ownerModeButton.classList.toggle('active', mode === 'owner');
-    if (ownerNotice) {
-      ownerNotice.classList.toggle('is-visible', mode === 'owner');
-      if (mode === 'owner') {
-        ownerNotice.removeAttribute('hidden');
-      } else {
-        ownerNotice.setAttribute('hidden', '');
-      }
-      ownerNotice.hidden = mode !== 'owner';
-    }
-    setFormMessage('', '');
   };
 
   const isOwnerMobile = (mobile) => mobile === OWNER_MOBILE;
@@ -994,14 +974,6 @@ document.addEventListener('DOMContentLoaded', () => {
       verifyOtpButton.disabled = !otpSent || otpInput.value.trim().length !== 6;
     };
 
-    if (customerModeButton) {
-      customerModeButton.addEventListener('click', () => setLoginMode('customer'));
-    }
-    if (ownerModeButton) {
-      ownerModeButton.addEventListener('click', () => setLoginMode('owner'));
-    }
-    setLoginMode('customer');
-
     if (mobileInput) {
       mobileInput.addEventListener('input', () => {
         updateSendOtpButtonState();
@@ -1021,12 +993,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!/^[0-9]{10}$/.test(mobile)) {
           setFormMessage('Please enter a valid 10-digit mobile number.', 'error');
           showToast('Please enter a valid 10-digit mobile number.', 'error');
-          return;
-        }
-
-        if (currentLoginMode === 'owner' && !isOwnerMobile(mobile)) {
-          setFormMessage('Owner login requires mobile 9701434006.', 'error');
-          showToast('Owner login requires mobile 9701434006.', 'error');
           return;
         }
 
@@ -1063,15 +1029,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      if (currentLoginMode === 'owner' && !isOwnerMobile(mobile)) {
-        setFormMessage('Owner login requires mobile 9701434006.', 'error');
-        return;
-      }
-      if (currentLoginMode === 'customer' && isOwnerMobile(mobile)) {
-        setFormMessage('Use Owner mode to sign in with this mobile number.', 'error');
-        return;
-      }
-
       showLoading('Verifying OTP...');
       const isValidOtp = await verifyOtp(otp);
       hideLoading();
@@ -1080,10 +1037,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      if (currentLoginMode === 'owner') {
+      if (isOwnerMobile(mobile)) {
         saveOwnerSession();
-        setFormMessage('Owner login successful. Redirecting to admin panel...', 'success');
-        showToast('Owner login successful. Redirecting to admin panel...', 'success');
+        setFormMessage('Login successful. Redirecting...', 'success');
+        showToast('Login successful. Redirecting...', 'success');
         window.setTimeout(() => window.location.href = 'admin.html', 500);
         return;
       }
