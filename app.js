@@ -343,6 +343,18 @@ document.addEventListener('DOMContentLoaded', () => {
     return { sections, completedBookings };
   };
 
+  const STATUS_FLOW = [
+    { key: 'Pending', label: 'Pending', badgeClass: 'pending', tone: 'yellow', summary: 'Waiting for confirmation.', message: 'Waiting for confirmation.' },
+    { key: 'Technician Assigned', label: 'Technician Assigned', badgeClass: 'assigned', tone: 'blue', summary: 'Technician has been assigned.', message: 'Technician has been assigned.' },
+    { key: 'Technician On The Way', label: 'Technician On The Way', badgeClass: 'on-the-way', tone: 'orange', summary: 'Technician is on the way to your location.', message: 'Technician is on the way to your location.' },
+    { key: 'Booking On Hold', label: 'Booking On Hold', badgeClass: 'on-hold', tone: 'purple', summary: 'Your booking is temporarily on hold. Please wait while we update your schedule.', message: 'Your booking is temporarily on hold. Please wait while we update your schedule.' },
+    { key: 'Service Started', label: 'Service Started', badgeClass: 'started', tone: 'cyan', summary: 'Our technician has started the service.', message: 'Our technician has started the service.' },
+    { key: 'Service Completed', label: 'Service Completed', badgeClass: 'completed', tone: 'green', summary: 'Your service has been completed successfully.', message: 'Your service has been completed successfully.' },
+    { key: 'Booking Cancelled', label: 'Booking Cancelled', badgeClass: 'cancelled', tone: 'red', summary: 'Your booking has been cancelled.', message: 'Your booking has been cancelled.' }
+  ];
+
+  const getBookingStatusMeta = (status = 'Pending') => STATUS_FLOW.find((entry) => entry.key === status) || STATUS_FLOW[0];
+
   const updateBookingStatus = (bookingId, status) => {
     const history = getBookingHistory();
     const updatedHistory = history.map((booking) => {
@@ -352,8 +364,12 @@ document.addEventListener('DOMContentLoaded', () => {
       return booking;
     });
     localStorage.setItem(AUTH_KEYS.bookingHistory, JSON.stringify(updatedHistory));
+    localStorage.setItem(AUTH_KEYS.bookingStatus, status);
     notifyBookingHistoryChanged();
     renderAdminPanel();
+    renderTracking();
+    renderSuccessPage();
+    return updatedHistory.find((booking) => booking.id === bookingId) || null;
   };
 
   const deleteBooking = (bookingId) => {
@@ -364,17 +380,23 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const getBookingCardMarkup = (item) => {
-    const isCompleted = item.bookingStatus === 'Completed';
+    const currentStatus = item.bookingStatus || 'Pending';
+    const statusMeta = getBookingStatusMeta(currentStatus);
+    const isCancelled = currentStatus === 'Booking Cancelled';
+    const isCompleted = currentStatus === 'Service Completed';
+    const statusButtons = STATUS_FLOW.filter((entry) => entry.key !== 'Pending' && entry.key !== 'Booking Cancelled').map((entry) => `
+      <button class="btn btn-status btn-small ${entry.key === currentStatus ? 'active' : ''}" data-action="update-status" data-id="${item.id}" data-status="${entry.key}">${entry.label}</button>
+    `).join('');
+
     return `
-      <article class="admin-booking-card ${isCompleted ? 'booking-completed' : item.bookingStatus === 'Pending' ? 'booking-pending' : ''}">
+      <article class="admin-booking-card ${isCompleted ? 'booking-completed' : currentStatus === 'Pending' ? 'booking-pending' : ''}">
         <div class="admin-booking-card-header">
           <div>
             <span class="booking-id">${item.id}</span>
-            <span class="booking-status badge badge-${(item.bookingStatus || 'Pending').toLowerCase().replace(/\s+/g, '-')}">${item.bookingStatus || 'Pending'}</span>
+            <span class="booking-status badge badge-${statusMeta.badgeClass}">${currentStatus}</span>
           </div>
           <div class="booking-actions">
             <button class="btn btn-secondary btn-small toggle-details" data-action="toggle-details" data-id="${item.id}">View Details</button>
-            ${!isCompleted ? `<button class="btn btn-success btn-small" data-action="mark-completed" data-id="${item.id}">Mark as Completed</button>` : ''}
             <button class="btn btn-danger btn-small" data-action="delete-booking" data-id="${item.id}">Delete</button>
           </div>
         </div>
@@ -391,8 +413,11 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         <div class="booking-details" hidden>
           <div class="detail-row"><span>Address</span><strong>${item.address}</strong></div>
-          <div class="detail-row"><span>Email</span><strong>${item.customerEmail || '—'}</strong></div>
           <div class="detail-row"><span>Booking Time</span><strong>${item.bookingTime || '—'}</strong></div>
+        </div>
+        <div class="status-action-group">
+          ${statusButtons}
+          ${!isCancelled && !isCompleted ? `<button class="btn btn-danger btn-small" data-action="cancel-booking" data-id="${item.id}">Cancel Booking</button>` : ''}
         </div>
       </article>
     `;
@@ -579,9 +604,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const details = card?.querySelector('.booking-details');
         if (details) details.hidden = !details.hidden;
       }
-      if (action === 'mark-completed') {
-        updateBookingStatus(bookingId, 'Completed');
-        showToast('Booking marked as completed.', 'success');
+      if (action === 'update-status') {
+        const status = button.dataset.status;
+        const confirmationMessage = `Are you sure you want to mark this booking as ${status}?`;
+        if (!window.confirm(confirmationMessage)) return;
+        updateBookingStatus(bookingId, status);
+        showToast('Booking status updated successfully.', 'success');
+      }
+      if (action === 'cancel-booking') {
+        if (!window.confirm('Are you sure you want to cancel this booking?')) return;
+        updateBookingStatus(bookingId, 'Booking Cancelled');
+        showToast('Booking status updated successfully.', 'success');
       }
       if (action === 'delete-booking') {
         deleteBooking(bookingId);
@@ -597,29 +630,57 @@ document.addEventListener('DOMContentLoaded', () => {
     const dateEl = document.getElementById('trackDate');
     const timeEl = document.getElementById('trackTime');
     const timelineEl = document.getElementById('trackTimeline');
-    if (!bookingIdEl && !serviceEl && !addressEl && !dateEl && !timeEl && !timelineEl) return;
+    const statusBadgeEl = document.getElementById('trackStatusBadge');
+    const statusMessageEl = document.getElementById('trackStatusMessage');
+    if (!bookingIdEl && !serviceEl && !addressEl && !dateEl && !timeEl && !timelineEl && !statusBadgeEl && !statusMessageEl) return;
 
+    const history = getBookingHistory();
+    const latestBooking = history.find((booking) => booking.id === (localStorage.getItem(AUTH_KEYS.bookingId) || '')) || history[0] || null;
+    const bookingStatus = latestBooking?.bookingStatus || localStorage.getItem(AUTH_KEYS.bookingStatus) || 'Pending';
     const booking = {
-      bookingId: localStorage.getItem(AUTH_KEYS.bookingId) || 'UC-1001',
-      service: localStorage.getItem(AUTH_KEYS.selectedService) || 'Chimney Cleaning',
-      address: localStorage.getItem(AUTH_KEYS.address) || 'Not provided',
-      date: localStorage.getItem(AUTH_KEYS.date) || 'Today',
-      time: localStorage.getItem(AUTH_KEYS.time) || 'As scheduled'
+      bookingId: latestBooking?.id || localStorage.getItem(AUTH_KEYS.bookingId) || 'UC-1001',
+      service: latestBooking?.service || localStorage.getItem(AUTH_KEYS.selectedService) || 'Chimney Cleaning',
+      address: latestBooking?.address || localStorage.getItem(AUTH_KEYS.address) || 'Not provided',
+      date: latestBooking?.date || localStorage.getItem(AUTH_KEYS.date) || 'Today',
+      time: latestBooking?.time || localStorage.getItem(AUTH_KEYS.time) || 'As scheduled'
     };
+    const statusMeta = getBookingStatusMeta(bookingStatus);
 
     if (bookingIdEl) bookingIdEl.textContent = booking.bookingId;
     if (serviceEl) serviceEl.textContent = booking.service;
     if (addressEl) addressEl.textContent = booking.address;
     if (dateEl) dateEl.textContent = booking.date;
     if (timeEl) timeEl.textContent = booking.time;
+    if (statusBadgeEl) {
+      statusBadgeEl.textContent = bookingStatus;
+      statusBadgeEl.className = `status-pill status-pill-${statusMeta.badgeClass}`;
+    }
+    if (statusMessageEl) {
+      statusMessageEl.textContent = statusMeta.summary;
+    }
 
     if (timelineEl) {
-      timelineEl.innerHTML = `
-        <div class="timeline-item active"><div class="timeline-dot"></div><div><strong>Booked</strong><p>Your service request is confirmed.</p></div></div>
-        <div class="timeline-item active"><div class="timeline-dot"></div><div><strong>Technician assigned</strong><p>A verified professional is preparing for your home.</p></div></div>
-        <div class="timeline-item"><div class="timeline-dot"></div><div><strong>Technician on the way</strong><p>Our expert is travelling to your location.</p></div></div>
-        <div class="timeline-item"><div class="timeline-dot"></div><div><strong>Service started</strong><p>Work has begun at your home.</p></div></div>
-        <div class="timeline-item"><div class="timeline-dot"></div><div><strong>Service completed</strong><p>We have completed the job and checked quality.</p></div></div>`;
+      const steps = [
+        { label: 'Pending', description: 'Your service request is confirmed.', active: ['Pending', 'Technician Assigned', 'Technician On The Way', 'Booking On Hold', 'Service Started', 'Service Completed', 'Booking Cancelled'].includes(bookingStatus) },
+        { label: 'Technician Assigned', description: 'A verified professional is preparing for your home.', active: ['Technician Assigned', 'Technician On The Way', 'Booking On Hold', 'Service Started', 'Service Completed'].includes(bookingStatus) },
+        { label: 'Technician On The Way', description: 'Our expert is travelling to your location.', active: ['Technician On The Way', 'Booking On Hold', 'Service Started', 'Service Completed'].includes(bookingStatus) },
+        { label: 'Booking On Hold', description: 'We have paused the booking for updates.', active: ['Booking On Hold', 'Service Started', 'Service Completed'].includes(bookingStatus) },
+        { label: 'Service Started', description: 'Work has begun at your home.', active: ['Service Started', 'Service Completed'].includes(bookingStatus) },
+        { label: 'Service Completed', description: 'We have completed the job and checked quality.', active: ['Service Completed'].includes(bookingStatus) }
+      ];
+      const cancelled = bookingStatus === 'Booking Cancelled';
+      timelineEl.innerHTML = steps.map((step) => `
+        <div class="timeline-item ${step.active ? 'active' : ''} ${cancelled && step.label === 'Service Completed' ? 'cancelled' : ''}">
+          <div class="timeline-dot"></div>
+          <div>
+            <strong>${step.label}</strong>
+            <p>${step.description}</p>
+          </div>
+        </div>
+      `).join('');
+      if (cancelled) {
+        timelineEl.innerHTML += `<div class="timeline-item active cancelled-step"><div class="timeline-dot"></div><div><strong>Booking Cancelled</strong><p>Your booking has been cancelled.</p></div></div>`;
+      }
     }
   };
 
