@@ -235,10 +235,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  const notifyBookingHistoryChanged = () => {
+    if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
+      try {
+        window.dispatchEvent(new CustomEvent('urbanChimneyBookingsChanged'));
+      } catch (error) {
+        // Ignore custom event issues in older environments.
+      }
+    }
+  };
+
   const saveBookingHistory = (booking) => {
     const history = getBookingHistory();
     history.unshift(booking);
     localStorage.setItem(AUTH_KEYS.bookingHistory, JSON.stringify(history));
+    notifyBookingHistoryChanged();
   };
 
   const formatLocalDate = (dateString) => {
@@ -260,26 +271,76 @@ document.addEventListener('DOMContentLoaded', () => {
     return isSameDay(booking.bookingTime, new Date());
   };
 
-  const getFilteredBookings = () => {
-    const history = getBookingHistory();
-    return history.filter((booking) => {
-      const matchesSearch = [booking.customerName, booking.mobile, booking.id]
-        .filter(Boolean)
-        .some((value) => value.toLowerCase().includes(adminSearchQuery.toLowerCase()));
+  const getBookingDateValue = (booking) => booking.serviceDate || booking.date || booking.bookingDate || '';
 
+  const getBookingDateTimestamp = (dateValue) => {
+    if (!dateValue) return Number.MAX_SAFE_INTEGER;
+    const date = new Date(dateValue);
+    if (Number.isNaN(date.getTime())) return Number.MAX_SAFE_INTEGER;
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+  };
+
+  const formatBookingDateLabel = (dateValue) => {
+    if (!dateValue) return 'Unscheduled';
+    const date = new Date(dateValue);
+    if (Number.isNaN(date.getTime())) return 'Unscheduled';
+    return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  };
+
+  const buildAdminBookingSections = (history, options = {}) => {
+    const searchQuery = (options.searchQuery || '').trim().toLowerCase();
+    const filterType = options.filterType || 'all';
+
+    const filteredHistory = history.filter((booking) => {
+      const searchText = [booking.customerName, booking.mobile, booking.id, booking.service, booking.address]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+      const matchesSearch = !searchQuery || searchText.includes(searchQuery);
       if (!matchesSearch) return false;
 
-      if (adminFilterType === 'today') {
-        return isBookingToday(booking);
+      if (filterType === 'today') {
+        return booking.bookingStatus !== 'Completed' && isSameDay(getBookingDateValue(booking), new Date());
       }
-      if (adminFilterType === 'pending') {
-        return booking.bookingStatus === 'Pending';
+      if (filterType === 'pending') {
+        return booking.bookingStatus !== 'Completed';
       }
-      if (adminFilterType === 'completed') {
+      if (filterType === 'completed') {
         return booking.bookingStatus === 'Completed';
       }
       return true;
     });
+
+    const sections = [];
+    const sectionMap = new Map();
+    const completedBookings = [];
+
+    filteredHistory.forEach((booking) => {
+      if (booking.bookingStatus === 'Completed') {
+        completedBookings.push(booking);
+        return;
+      }
+
+      const bookingDateValue = getBookingDateValue(booking);
+      const bookingDate = bookingDateValue ? new Date(bookingDateValue) : null;
+      const isToday = bookingDate && isSameDay(bookingDate, new Date());
+      const sectionLabel = isToday ? "Today's Bookings" : formatBookingDateLabel(bookingDateValue);
+      const sectionKey = isToday ? '__today__' : `${bookingDateValue || 'unscheduled'}:${sectionLabel}`;
+
+      if (!sectionMap.has(sectionKey)) {
+        sectionMap.set(sectionKey, {
+          label: sectionLabel,
+          sortValue: isToday ? 0 : getBookingDateTimestamp(bookingDateValue),
+          bookings: []
+        });
+      }
+
+      sectionMap.get(sectionKey).bookings.push(booking);
+    });
+
+    sections.push(...Array.from(sectionMap.values()).sort((left, right) => left.sortValue - right.sortValue));
+
+    return { sections, completedBookings };
   };
 
   const updateBookingStatus = (bookingId, status) => {
@@ -291,13 +352,54 @@ document.addEventListener('DOMContentLoaded', () => {
       return booking;
     });
     localStorage.setItem(AUTH_KEYS.bookingHistory, JSON.stringify(updatedHistory));
+    notifyBookingHistoryChanged();
     renderAdminPanel();
   };
 
   const deleteBooking = (bookingId) => {
     const history = getBookingHistory().filter((booking) => booking.id !== bookingId);
     localStorage.setItem(AUTH_KEYS.bookingHistory, JSON.stringify(history));
+    notifyBookingHistoryChanged();
     renderAdminPanel();
+  };
+
+  const getBookingCardMarkup = (item) => {
+    const isCompleted = item.bookingStatus === 'Completed';
+    return `
+      <article class="admin-booking-card ${isCompleted ? 'booking-completed' : item.bookingStatus === 'Pending' ? 'booking-pending' : ''}">
+        <div class="admin-booking-card-header">
+          <div>
+            <span class="booking-id">${item.id}</span>
+            <span class="booking-status badge badge-${(item.bookingStatus || 'Pending').toLowerCase().replace(/\s+/g, '-')}">${item.bookingStatus || 'Pending'}</span>
+          </div>
+          <div class="booking-actions">
+            <button class="btn btn-secondary btn-small toggle-details" data-action="toggle-details" data-id="${item.id}">View Details</button>
+            ${!isCompleted ? `<button class="btn btn-success btn-small" data-action="mark-completed" data-id="${item.id}">Mark as Completed</button>` : ''}
+            <button class="btn btn-danger btn-small" data-action="delete-booking" data-id="${item.id}">Delete</button>
+          </div>
+        </div>
+        <div class="booking-meta">
+          <div><span>Customer</span><strong>${item.customerName}</strong></div>
+          <div><span>Mobile</span><strong>${item.mobile}</strong></div>
+          <div><span>Service</span><strong>${item.service}</strong></div>
+          <div><span>Price</span><strong>₹${item.amount || item.bookingAmount || getServiceAmount(item.service)}</strong></div>
+        </div>
+        <div class="booking-meta booking-meta-row">
+          <div><span>Date</span><strong>${item.date || 'Not selected'}</strong></div>
+          <div><span>Time</span><strong>${item.time || 'Not selected'}</strong></div>
+          <div><span>Payment</span><strong>${item.paymentStatus || item.paymentMethod || 'Pending'}</strong></div>
+        </div>
+        <div class="booking-details" hidden>
+          <div class="detail-row"><span>Address</span><strong>${item.address}</strong></div>
+          <div class="detail-row"><span>Email</span><strong>${item.customerEmail || '—'}</strong></div>
+          <div class="detail-row"><span>Booking Time</span><strong>${item.bookingTime || '—'}</strong></div>
+        </div>
+      </article>
+    `;
+  };
+
+  window.UrbanChimneyAdmin = {
+    buildAdminBookingSections
   };
 
   const getServiceDetails = (service) => {
@@ -362,11 +464,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!statsContainer && !emptyState && !tableWrap) return;
 
     const history = getBookingHistory();
-    const todayBookings = history.filter(isBookingToday);
-    const pendingBookings = history.filter((booking) => booking.bookingStatus === 'Pending');
+    const todayBookings = history.filter((booking) => booking.bookingStatus !== 'Completed' && isSameDay(getBookingDateValue(booking), new Date()));
+    const pendingBookings = history.filter((booking) => booking.bookingStatus !== 'Completed');
+    const completedBookings = history.filter((booking) => booking.bookingStatus === 'Completed');
     const todayRevenue = history
-      .filter((booking) => booking.bookingStatus === 'Completed' && isBookingToday(booking))
-      .reduce((sum, booking) => sum + Number(booking.amount || 0), 0);
+      .filter((booking) => booking.bookingStatus === 'Completed' && isSameDay(getBookingDateValue(booking), new Date()))
+      .reduce((sum, booking) => sum + Number(booking.amount || booking.bookingAmount || 0), 0);
 
     if (statsContainer) {
       statsContainer.innerHTML = `
@@ -379,60 +482,58 @@ document.addEventListener('DOMContentLoaded', () => {
           <strong>${pendingBookings.length}</strong>
         </div>
         <div class="stat-card admin-stat-card">
+          <span class="stat-label">Completed Bookings</span>
+          <strong>${completedBookings.length}</strong>
+        </div>
+        <div class="stat-card admin-stat-card">
           <span class="stat-label">Today's Revenue</span>
           <strong>₹${todayRevenue.toLocaleString()}</strong>
         </div>`;
     }
 
-    const filteredHistory = getFilteredBookings();
+    const { sections, completedBookings: filteredCompletedBookings } = buildAdminBookingSections(history, {
+      searchQuery: adminSearchQuery,
+      filterType: adminFilterType
+    });
+    const hasVisibleBookings = sections.some((section) => section.bookings.length) || filteredCompletedBookings.length;
+
     if (emptyState) {
-      emptyState.hidden = filteredHistory.length > 0;
-      emptyState.textContent = filteredHistory.length ? '' : 'No matching bookings found.';
+      emptyState.hidden = hasVisibleBookings;
+      emptyState.textContent = hasVisibleBookings ? '' : 'No matching bookings found.';
     }
 
     if (tableWrap) {
-      if (!filteredHistory.length) {
+      if (!hasVisibleBookings) {
         tableWrap.innerHTML = '';
         return;
       }
 
-      tableWrap.innerHTML = filteredHistory.map((item) => `
-        <article class="admin-booking-card ${item.bookingStatus === 'Pending' ? 'booking-pending' : item.bookingStatus === 'Completed' ? 'booking-completed' : ''}">
-          <div class="admin-booking-card-header">
-            <div>
-              <span class="booking-id">${item.id}</span>
-              <span class="booking-status badge badge-${item.bookingStatus.toLowerCase().replace(/\s+/g, '-')}">${item.bookingStatus || 'Pending'}</span>
+      const sectionMarkup = [
+        ...sections.map((section) => `
+          <section class="admin-date-section">
+            <div class="admin-date-section-header">
+              <h3>${section.label}</h3>
+              <span>${section.bookings.length} booking${section.bookings.length === 1 ? '' : 's'}</span>
             </div>
-            <div class="booking-actions">
-              <button class="btn btn-secondary btn-small toggle-details" data-action="toggle-details" data-id="${item.id}">View Details</button>
-              <button class="btn btn-danger btn-small" data-action="delete-booking" data-id="${item.id}">Delete</button>
+            <div class="admin-date-section-body">
+              ${section.bookings.map((item) => getBookingCardMarkup(item)).join('')}
             </div>
-          </div>
-          <div class="booking-meta">
-            <div><span>Customer</span><strong>${item.customerName}</strong></div>
-            <div><span>Mobile</span><strong>${item.mobile}</strong></div>
-            <div><span>Service</span><strong>${item.service}</strong></div>
-            <div><span>Price</span><strong>₹${item.amount || item.bookingAmount || getServiceAmount(item.service)}</strong></div>
-          </div>
-          <div class="booking-meta booking-meta-row">
-            <div><span>Date</span><strong>${item.date}</strong></div>
-            <div><span>Time</span><strong>${item.time}</strong></div>
-            <div><span>Payment</span><strong>${item.paymentMethod || 'Pending'}</strong></div>
-          </div>
-          <div class="booking-details" hidden>
-            <div class="detail-row"><span>Address</span><strong>${item.address}</strong></div>
-            <div class="detail-row"><span>Email</span><strong>${item.customerEmail || '—'}</strong></div>
-            <div class="detail-row booking-status-row">
-              <label for="status-${item.id}">Change status</label>
-              <select id="status-${item.id}" class="status-select" data-action="change-status" data-id="${item.id}">
-                ${['Pending', 'Technician Assigned', 'Technician On The Way', 'Service Started', 'Completed'].map((status) => `
-                  <option value="${status}" ${item.bookingStatus === status ? 'selected' : ''}>${status}</option>
-                `).join('')}
-              </select>
+          </section>
+        `),
+        filteredCompletedBookings.length ? `
+          <section class="admin-date-section completed-section">
+            <div class="admin-date-section-header">
+              <h3>Completed Bookings</h3>
+              <span>${filteredCompletedBookings.length} booking${filteredCompletedBookings.length === 1 ? '' : 's'}</span>
             </div>
-          </div>
-        </article>
-      `).join('');
+            <div class="admin-date-section-body">
+              ${filteredCompletedBookings.map((item) => getBookingCardMarkup(item)).join('')}
+            </div>
+          </section>
+        ` : ''
+      ].filter(Boolean).join('');
+
+      tableWrap.innerHTML = sectionMarkup;
     }
   };
 
@@ -478,19 +579,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const details = card?.querySelector('.booking-details');
         if (details) details.hidden = !details.hidden;
       }
+      if (action === 'mark-completed') {
+        updateBookingStatus(bookingId, 'Completed');
+        showToast('Booking marked as completed.', 'success');
+      }
       if (action === 'delete-booking') {
         deleteBooking(bookingId);
         showToast('Booking deleted successfully.', 'success');
       }
-    });
-
-    tableWrap.addEventListener('change', (event) => {
-      const select = event.target.closest('.status-select');
-      if (!select) return;
-      const bookingId = select.dataset.id;
-      const status = select.value;
-      updateBookingStatus(bookingId, status);
-      showToast('Booking status updated.', 'success');
     });
   };
 
@@ -788,9 +884,10 @@ document.addEventListener('DOMContentLoaded', () => {
           amount: localStorage.getItem(AUTH_KEYS.bookingPriceLabel) || localStorage.getItem(AUTH_KEYS.bookingAmount) || '₹599',
           paymentMethod,
           paymentStatus: 'Completed',
-          bookingStatus: 'Completed',
+          bookingStatus: 'Pending',
           bookingTime,
-          createdAt: bookingTime
+          createdAt: bookingTime,
+          serviceDate: localStorage.getItem(AUTH_KEYS.date) || new Date().toISOString().slice(0, 10)
         };
 
         localStorage.setItem(AUTH_KEYS.paymentMethod, paymentMethod);
