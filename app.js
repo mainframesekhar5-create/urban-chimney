@@ -3,6 +3,9 @@ document.addEventListener('DOMContentLoaded', () => {
     active: 'urbanChimneyAuth',
     loginTime: 'urbanChimneyLoginTime',
     sessionExpiry: 'urbanChimneySessionExpiry',
+    ownerActive: 'urbanChimneyOwnerAuth',
+    ownerLoginTime: 'urbanChimneyOwnerLoginTime',
+    ownerSessionExpiry: 'urbanChimneyOwnerSessionExpiry',
     mobile: 'customerMobile',
     name: 'customerName',
     city: 'customerCity',
@@ -15,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     location: 'location',
     paymentMethod: 'paymentMethod',
     paymentStatus: 'paymentStatus',
+    bookingStatus: 'bookingStatus',
     bookingAmount: 'bookingAmount',
     bookingPriceLabel: 'bookingPriceLabel',
     customerEmail: 'customerEmail',
@@ -23,9 +27,114 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const SESSION_DURATION_MS = 30 * 60 * 1000;
   const DEMO_OTP = '123456';
+  const OWNER_MOBILE = '9701434006';
   const OWNER_CONTACT = {
     mobile: '+91 90000 12345',
-    email: 'contact@urbanchimney.com'
+    email: 'KRS.MF66@gmail.com'
+  };
+
+  let adminSearchQuery = '';
+  let adminFilterType = 'all';
+  let currentLoginMode = 'customer';
+
+  const clearCustomerSession = () => {
+    [AUTH_KEYS.active, AUTH_KEYS.loginTime, AUTH_KEYS.sessionExpiry, AUTH_KEYS.mobile, AUTH_KEYS.name, AUTH_KEYS.city].forEach((key) => localStorage.removeItem(key));
+  };
+
+  const clearOwnerSession = () => {
+    [AUTH_KEYS.ownerActive, AUTH_KEYS.ownerLoginTime, AUTH_KEYS.ownerSessionExpiry].forEach((key) => localStorage.removeItem(key));
+  };
+
+  const saveAuthSession = (mobile) => {
+    localStorage.setItem(AUTH_KEYS.active, 'active');
+    localStorage.setItem(AUTH_KEYS.mobile, mobile);
+    localStorage.setItem(AUTH_KEYS.loginTime, String(Date.now()));
+    localStorage.setItem(AUTH_KEYS.sessionExpiry, String(Date.now() + SESSION_DURATION_MS));
+    localStorage.setItem(AUTH_KEYS.name, localStorage.getItem(AUTH_KEYS.name) || 'Guest');
+    localStorage.setItem(AUTH_KEYS.city, localStorage.getItem(AUTH_KEYS.city) || 'Not provided');
+  };
+
+  const saveOwnerSession = () => {
+    localStorage.setItem(AUTH_KEYS.ownerActive, 'active');
+    localStorage.setItem(AUTH_KEYS.ownerLoginTime, String(Date.now()));
+    localStorage.setItem(AUTH_KEYS.ownerSessionExpiry, String(Date.now() + SESSION_DURATION_MS));
+  };
+
+  const isSessionValid = () => {
+    const expiry = Number(localStorage.getItem(AUTH_KEYS.sessionExpiry) || 0);
+    const isActive = localStorage.getItem(AUTH_KEYS.active) === 'active';
+    return isActive && expiry > Date.now();
+  };
+
+  const isOwnerSessionValid = () => {
+    const expiry = Number(localStorage.getItem(AUTH_KEYS.ownerSessionExpiry) || 0);
+    const isActive = localStorage.getItem(AUTH_KEYS.ownerActive) === 'active';
+    return isActive && expiry > Date.now();
+  };
+
+  const redirectBasedOnSession = () => {
+    if (currentPage === 'index.html') {
+      if (isOwnerSessionValid()) {
+        window.location.replace('admin.html');
+        return;
+      }
+      if (isSessionValid()) {
+        window.location.replace('home.html');
+      }
+      return;
+    }
+
+    if (currentPage === 'admin.html') {
+      if (isOwnerSessionValid()) return;
+      if (isSessionValid()) {
+        window.location.replace('home.html');
+        return;
+      }
+      clearOwnerSession();
+      clearCustomerSession();
+      window.location.replace('index.html');
+      return;
+    }
+
+    if (protectedPages.includes(currentPage)) {
+      if (isOwnerSessionValid()) {
+        window.location.replace('admin.html');
+        return;
+      }
+      if (!isSessionValid()) {
+        clearCustomerSession();
+        window.location.replace('index.html');
+      }
+    }
+  };
+
+  const checkSession = () => {
+    if (currentPage === 'admin.html') {
+      if (!isOwnerSessionValid()) {
+        if (isSessionValid()) {
+          window.location.replace('home.html');
+          return true;
+        }
+        clearOwnerSession();
+        clearCustomerSession();
+        window.location.replace('index.html');
+        return true;
+      }
+      return false;
+    }
+
+    if (protectedPages.includes(currentPage)) {
+      if (isOwnerSessionValid()) {
+        window.location.replace('admin.html');
+        return true;
+      }
+      if (!isSessionValid()) {
+        clearCustomerSession();
+        window.location.replace('index.html');
+        return true;
+      }
+    }
+    return false;
   };
   const protectedPages = ['home.html', 'booking.html', 'payment.html', 'profile.html', 'track.html', 'success.html', 'services.html', 'spare-parts.html', 'admin.html', 'settings.html', 'bookings.html'];
   const currentPage = window.location.pathname.split('/').pop() || 'index.html';
@@ -41,6 +150,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const formMessage = document.getElementById('formMessage');
   const otpStep = document.getElementById('otpStep');
   const verifyStep = document.getElementById('verifyStep');
+  const customerModeButton = document.getElementById('customerModeButton');
+  const ownerModeButton = document.getElementById('ownerModeButton');
+  const ownerNotice = document.getElementById('ownerNotice');
 
   const toggleOtpFields = (visible) => {
     if (otpStep) otpStep.hidden = !visible;
@@ -67,6 +179,16 @@ document.addEventListener('DOMContentLoaded', () => {
     formMessage.className = `form-message ${type}`;
   };
 
+  const setLoginMode = (mode) => {
+    currentLoginMode = mode;
+    if (customerModeButton) customerModeButton.classList.toggle('active', mode === 'customer');
+    if (ownerModeButton) ownerModeButton.classList.toggle('active', mode === 'owner');
+    if (ownerNotice) ownerNotice.hidden = mode !== 'owner';
+    setFormMessage('', '');
+  };
+
+  const isOwnerMobile = (mobile) => mobile === OWNER_MOBILE;
+
   const showLoading = (message = 'Working on it...') => {
     let overlay = document.getElementById('loadingOverlay');
     if (!overlay) {
@@ -88,45 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const clearAuthState = () => {
-    [AUTH_KEYS.active, AUTH_KEYS.loginTime, AUTH_KEYS.sessionExpiry, AUTH_KEYS.mobile, AUTH_KEYS.name, AUTH_KEYS.city, AUTH_KEYS.bookingId, AUTH_KEYS.selectedService, AUTH_KEYS.address, AUTH_KEYS.date, AUTH_KEYS.time, AUTH_KEYS.location, AUTH_KEYS.paymentMethod, AUTH_KEYS.paymentStatus, AUTH_KEYS.bookingAmount, AUTH_KEYS.bookingPriceLabel, AUTH_KEYS.customerEmail, AUTH_KEYS.bookingTime].forEach((key) => localStorage.removeItem(key));
-  };
-
-  const saveAuthSession = (mobile) => {
-    localStorage.setItem(AUTH_KEYS.active, 'active');
-    localStorage.setItem(AUTH_KEYS.mobile, mobile);
-    localStorage.setItem(AUTH_KEYS.loginTime, String(Date.now()));
-    localStorage.setItem(AUTH_KEYS.sessionExpiry, String(Date.now() + SESSION_DURATION_MS));
-    localStorage.setItem(AUTH_KEYS.name, localStorage.getItem(AUTH_KEYS.name) || 'Guest');
-    localStorage.setItem(AUTH_KEYS.city, localStorage.getItem(AUTH_KEYS.city) || 'Not provided');
-  };
-
-  const isSessionValid = () => {
-    const expiry = Number(localStorage.getItem(AUTH_KEYS.sessionExpiry) || 0);
-    const isActive = localStorage.getItem(AUTH_KEYS.active) === 'active';
-    return isActive && expiry > Date.now();
-  };
-
-  const redirectBasedOnSession = () => {
-    if (currentPage === 'index.html') {
-      if (isSessionValid()) {
-        window.location.replace('home.html');
-      }
-      return;
-    }
-
-    if (!isSessionValid()) {
-      clearAuthState();
-      window.location.replace('index.html');
-    }
-  };
-
-  const checkSession = () => {
-    if (protectedPages.includes(currentPage) && !isSessionValid()) {
-      clearAuthState();
-      window.location.replace('index.html');
-      return true;
-    }
-    return false;
+    [AUTH_KEYS.active, AUTH_KEYS.loginTime, AUTH_KEYS.sessionExpiry, AUTH_KEYS.ownerActive, AUTH_KEYS.ownerLoginTime, AUTH_KEYS.ownerSessionExpiry, AUTH_KEYS.mobile, AUTH_KEYS.name, AUTH_KEYS.city, AUTH_KEYS.bookingId, AUTH_KEYS.selectedService, AUTH_KEYS.address, AUTH_KEYS.date, AUTH_KEYS.time, AUTH_KEYS.location, AUTH_KEYS.paymentMethod, AUTH_KEYS.paymentStatus, AUTH_KEYS.bookingAmount, AUTH_KEYS.bookingPriceLabel, AUTH_KEYS.customerEmail, AUTH_KEYS.bookingTime].forEach((key) => localStorage.removeItem(key));
   };
 
   const requestOtp = async (mobile) => new Promise((resolve) => {
@@ -650,6 +734,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('#logoutButton').forEach((button) => {
       button.addEventListener('click', () => {
         clearAuthState();
+        clearOwnerSession();
         window.location.href = 'index.html';
       });
     });
@@ -690,6 +775,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (action === 'logout') {
           event.preventDefault();
           clearAuthState();
+          clearOwnerSession();
           window.location.href = 'index.html';
           return;
         }
@@ -718,6 +804,14 @@ document.addEventListener('DOMContentLoaded', () => {
       verifyOtpButton.disabled = !otpSent || otpInput.value.trim().length !== 6;
     };
 
+    if (customerModeButton) {
+      customerModeButton.addEventListener('click', () => setLoginMode('customer'));
+    }
+    if (ownerModeButton) {
+      ownerModeButton.addEventListener('click', () => setLoginMode('owner'));
+    }
+    setLoginMode('customer');
+
     if (mobileInput) {
       mobileInput.addEventListener('input', () => {
         updateSendOtpButtonState();
@@ -737,6 +831,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!/^[0-9]{10}$/.test(mobile)) {
           setFormMessage('Please enter a valid 10-digit mobile number.', 'error');
           showToast('Please enter a valid 10-digit mobile number.', 'error');
+          return;
+        }
+
+        if (currentLoginMode === 'owner' && !isOwnerMobile(mobile)) {
+          setFormMessage('Owner login requires mobile 9701434006.', 'error');
+          showToast('Owner login requires mobile 9701434006.', 'error');
           return;
         }
 
@@ -773,11 +873,28 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      if (currentLoginMode === 'owner' && !isOwnerMobile(mobile)) {
+        setFormMessage('Owner login requires mobile 9701434006.', 'error');
+        return;
+      }
+      if (currentLoginMode === 'customer' && isOwnerMobile(mobile)) {
+        setFormMessage('Use Owner mode to sign in with this mobile number.', 'error');
+        return;
+      }
+
       showLoading('Verifying OTP...');
       const isValidOtp = await verifyOtp(otp);
       hideLoading();
       if (!isValidOtp) {
         setFormMessage('Incorrect OTP. Use 123456 for the demo.', 'error');
+        return;
+      }
+
+      if (currentLoginMode === 'owner') {
+        saveOwnerSession();
+        setFormMessage('Owner login successful. Redirecting to admin panel...', 'success');
+        showToast('Owner login successful. Redirecting to admin panel...', 'success');
+        window.setTimeout(() => window.location.href = 'admin.html', 500);
         return;
       }
 
