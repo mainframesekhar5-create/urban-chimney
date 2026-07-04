@@ -289,6 +289,7 @@ body.drawer-open {
 .login-mode-toggle { display: flex; gap: 10px; margin-bottom: 18px; }
 
 .form-message.info { display: block; background: rgba(59, 130, 246, 0.12); color: #1d4ed8; }
+#ownerNotice { display: none; }
 #ownerNotice.is-visible { display: block; }
 
 .auth-page .footer { position: relative; z-index: 1; background: transparent; color: rgba(255,255,255,0.8); }

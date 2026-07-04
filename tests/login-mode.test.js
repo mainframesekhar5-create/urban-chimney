@@ -75,7 +75,7 @@ class MockElement {
   }
 
   getAttribute(name) {
-    return this.attributes[name];
+    return this.attributes[name] ?? null;
   }
 
   removeAttribute(name) {
@@ -228,9 +228,11 @@ document._domReadyHandler();
 
 ownerModeButton.click();
 assert.strictEqual(ownerNotice.hidden, false, 'Owner notice should become visible in owner mode');
+assert.strictEqual(ownerNotice.getAttribute('hidden'), null, 'Owner notice should not keep the hidden attribute in owner mode');
 assert.ok(ownerNotice.classList.contains('is-visible'), 'Owner notice should expose a visible state class');
 
 customerModeButton.click();
 assert.strictEqual(ownerNotice.hidden, true, 'Owner notice should hide again in customer mode');
+assert.strictEqual(ownerNotice.getAttribute('hidden'), '', 'Owner notice should regain the hidden attribute in customer mode');
 
 console.log('Login mode toggle tests passed');

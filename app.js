@@ -184,8 +184,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (customerModeButton) customerModeButton.classList.toggle('active', mode === 'customer');
     if (ownerModeButton) ownerModeButton.classList.toggle('active', mode === 'owner');
     if (ownerNotice) {
-      ownerNotice.hidden = mode !== 'owner';
       ownerNotice.classList.toggle('is-visible', mode === 'owner');
+      if (mode === 'owner') {
+        ownerNotice.removeAttribute('hidden');
+      } else {
+        ownerNotice.setAttribute('hidden', '');
+      }
+      ownerNotice.hidden = mode !== 'owner';
     }
     setFormMessage('', '');
   };
