@@ -1,178 +1,685 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UrbanChimney | Dashboard</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Urban Chimney | Kitchen Chimney Repair Hyderabad</title>
+
+<meta name="description" content="Urban Chimney provides Kitchen Chimney Repair, Cleaning, Installation and Hob Service across Hyderabad.">
+
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="home.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
 </head>
-<body class="home-page">
-  <header class="site-header">
-    <div class="header-inner">
-      <button class="menu-toggle" id="drawerToggle" aria-label="Open navigation menu">
-        <i class="fa-solid fa-bars"></i>
-      </button>
-      <a class="brand" href="home.html">
-  <img src="images/logo.png" alt="Urban Chimney Logo" class="logo">
-  <div>
-    <h2>Urban Chimney</h2>
-    <small>Kitchen Chimney Repair & Service</small>
-  </div>
-      </a>
-    </div>
-  </header>
 
-  <div class="drawer-overlay" id="drawerOverlay" aria-hidden="true"></div>
-  <aside class="side-drawer" id="sideDrawer" aria-hidden="true">
-    <div class="drawer-header">
-      <div>
-        <p class="drawer-brand">UrbanChimney</p>
-        <p class="drawer-subtitle">Home service dashboard</p>
-      </div>
-      <button class="drawer-close" id="drawerClose" aria-label="Close navigation menu"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <nav class="drawer-nav" aria-label="Main navigation">
-      <ul class="drawer-list">
-        <li><a class="drawer-item" href="home.html"><i class="fa-solid fa-house"></i><span>Home</span></a></li>
-        <li><a class="drawer-item" href="profile.html"><i class="fa-solid fa-user"></i><span>Profile</span></a></li>
-        <li><a class="drawer-item" href="services.html"><i class="fa-solid fa-hands-holding-circle"></i><span>Services</span></a></li>
-        <li><a class="drawer-item" href="spare-parts.html"><i class="fa-solid fa-box-open"></i><span>Spare Parts</span></a></li>
-        <li><a class="drawer-item" href="bookings.html"><i class="fa-solid fa-calendar-check"></i><span>My Bookings</span></a></li>
-        <li><a class="drawer-item" href="track.html"><i class="fa-solid fa-location-dot"></i><span>Tracking</span></a></li>
-        <li><a class="drawer-item" href="settings.html"><i class="fa-solid fa-gear"></i><span>Settings</span></a></li>
-        <li><button class="drawer-item drawer-logout" type="button" data-action="logout"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></button></li>
-      </ul>
-    </nav>
-  </aside>
+<body>
 
-  <main class="page-shell">
-    <section class="hero-banner">
-      <div class="hero-card">
-        <span class="hero-badge"><i class="fa-solid fa-bolt"></i> Urban Company-style convenience</span>
-        <h1 id="welcomeName">Welcome back</h1>
-        <p id="welcomeMobile">Your premium home service is just a tap away.</p>
-        <div class="inline-actions">
-          <a class="btn btn-secondary" href="booking.html"><i class="fa-solid fa-calendar-check"></i> Book now</a>
-          <a class="btn btn-success" href="track.html"><i class="fa-solid fa-location-dot"></i> Track service</a>
-        </div>
-        <div class="dashboard-highlight" style="margin-top: 16px;">
-          <div>
-            <strong id="bookingSnapshot">Your next service is ready to schedule.</strong>
-            <p class="muted">Smart reminders, live updates, and transparent billing.</p>
-          </div>
-        </div>
-      </div>
-      <div class="hero-image">
-        <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1200&q=80" alt="Professional home service technician at work">
-      </div>
-    </section>
+<header class="header">
 
-    <section>
-      <div class="section-title">
-        <h2>Choose a category</h2>
-      </div>
-      <div class="service-grid home-grid">
-        <article class="card service-card premium-card">
-          <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=900&q=80" alt="Professional chimney cleaning service">
-          <div class="card-body">
-            <h3>Services</h3>
-            <p>Book expert chimney cleaning and repair services with transparent pricing and fast scheduling.</p>
-            <div class="card-footer">
-              <a class="btn btn-primary" href="services.html">Explore Services</a>
-            </div>
-          </div>
-        </article>
-        <article class="card service-card premium-card">
-          <img src="https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=900&q=80" alt="Chimney spare parts and accessories">
-          <div class="card-body">
-            <h3>Spare Parts</h3>
-            <p>Find genuine chimney filters, motors, switches, and lights for quick replacement.</p>
-            <div class="card-footer">
-              <a class="btn btn-secondary" href="spare-parts.html">Shop Spare Parts</a>
-            </div>
-          </div>
-        </article>
-      </div>
-    </section>
+<div class="container">
 
-    <section class="photo-panel">
-      <div class="section-title">
-        <h2>Photo highlights</h2>
-        <p class="muted">See our certified chimney care in action with real service and repair photos.</p>
-      </div>
-      <div class="gallery-grid">
-        <article class="gallery-card">
-          <img src="https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=900&q=80" alt="Deep chimney cleaning service">
-          <div class="gallery-card-body">
-            <strong>Deep chimney cleaning</strong>
-            <p>High-quality cleaning to keep your kitchen fresh and safe.</p>
-          </div>
-        </article>
-        <article class="gallery-card">
-          <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=900&q=80" alt="Chimney repair technician">
-          <div class="gallery-card-body">
-            <strong>Expert repair</strong>
-            <p>Technicians diagnose and fix chimney motor, PCB, and suction issues.</p>
-          </div>
-        </article>
-        <article class="gallery-card">
-          <img src="https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=crop&w=900&q=80" alt="Home service technician finishing a job">
-          <div class="gallery-card-body">
-            <strong>Trusted home service</strong>
-            <p>On-time professionals delivering spotless service at your doorstep.</p>
-          </div>
-        </article>
-      </div>
-    </section>
+<div class="logo">
 
-   <section class="hero-banner">
+<h2>Urban Chimney</h2>
+
+<p>Kitchen Chimney Experts</p>
+
+</div>
+
+<nav>
+
+<ul>
+
+<li><a href="#">Home</a></li>
+
+<li><a href="#services">Services</a></li>
+
+<li><a href="#about">About</a></li>
+
+<li><a href="#gallery">Gallery</a></li>
+
+<li><a href="#contact">Contact</a></li>
+
+</ul>
+
+</nav>
+
+</div>
+
+</header>
+
+<section class="hero">
 
 <div class="hero-content">
 
 <h1>Kitchen Chimney Repair & Cleaning Services in Hyderabad</h1>
 
 <p>
-Same Day Doorstep Service | Expert Technicians | Genuine Spare Parts | Affordable Price
+
+Same Day Doorstep Service
+
+Expert Technicians
+
+Original Spare Parts
+
+Affordable Prices
+
 </p>
 
-<div class="hero-buttons">
+<a href="booking.html" class="btn">Book Service</a>
 
-<a href="booking.html" class="btn btn-primary">
-Book Service
-</a>
+<a href="tel:+918886093403" class="btn2">Call Now</a>
 
-<a href="tel:+918886093403" class="btn btn-secondary">
-Call Now
-</a>
+<a href="https://wa.me/918886093403" class="btn3">
 
-<a href="https://wa.me/918886093403" class="btn btn-success">
 WhatsApp
-</a>
 
-</div>
+</a>
 
 </div>
 
 <div class="hero-image">
 
-<img src="images/hero.jpg" alt="Urban Chimney Service">
+<img src="images/hero.jpg" alt="Urban Chimney">
 
 </div>
 
 </section>
-  </main>
+<!-- ================= OUR SERVICES ================= -->
 
-  <footer class="footer">
-    <div class="footer-brand">
-      <span class="brand-mark">UC</span>
-      <span>UrbanChimney</span>
-    </div>
-    <p>UrbanChimney © 2026 • Crafted for modern homes.</p>
-  </footer>
-  <script src="app.js"></script>
+<section id="services" class="services">
+
+<div class="container">
+
+<h2 class="section-title">Our Services</h2>
+
+<p class="section-subtitle">
+Professional Kitchen Chimney & Hob Services Across Hyderabad
+</p>
+
+<div class="service-grid">
+
+<div class="service-card">
+
+<i class="fa-solid fa-fan"></i>
+
+<h3>Chimney Cleaning</h3>
+
+<p>Deep cleaning removes oil, grease and smoke deposits to improve suction and performance.</p>
+
+<a href="booking.html" class="service-btn">Book Now</a>
+
+</div>
+
+<div class="service-card">
+
+<i class="fa-solid fa-screwdriver-wrench"></i>
+
+<h3>Chimney Repair</h3>
+
+<p>Motor, PCB, switch, light and suction problem repair by expert technicians.</p>
+
+<a href="booking.html" class="service-btn">Book Now</a>
+
+</div>
+
+<div class="service-card">
+
+<i class="fa-solid fa-house"></i>
+
+<h3>Installation</h3>
+
+<p>Professional installation for all chimney brands with warranty support.</p>
+
+<a href="booking.html" class="service-btn">Book Now</a>
+
+</div>
+
+<div class="service-card">
+
+<i class="fa-solid fa-fire-burner"></i>
+
+<h3>Hob Repair</h3>
+
+<p>Glass hob, burner and ignition repair with genuine spare parts.</p>
+
+<a href="booking.html" class="service-btn">Book Now</a>
+
+</div>
+
+<div class="service-card">
+
+<i class="fa-solid fa-gears"></i>
+
+<h3>Spare Parts</h3>
+
+<p>Original motors, filters, LED lights, push buttons and accessories available.</p>
+
+<a href="spare-parts.html" class="service-btn">View Parts</a>
+
+</div>
+
+<div class="service-card">
+
+<i class="fa-solid fa-shield-heart"></i>
+
+<h3>AMC Service</h3>
+
+<p>Annual Maintenance Contracts for hassle-free chimney performance.</p>
+
+<a href="booking.html" class="service-btn">Book AMC</a>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ================= WHY CHOOSE US ================= -->
+
+<section id="about" class="why-us">
+
+<div class="container">
+
+<h2 class="section-title">Why Choose Urban Chimney?</h2>
+
+<div class="why-grid">
+
+<div class="why-card">
+
+<i class="fa-solid fa-clock"></i>
+
+<h3>Same Day Service</h3>
+
+<p>Quick doorstep service anywhere in Hyderabad.</p>
+
+</div>
+
+<div class="why-card">
+
+<i class="fa-solid fa-user-check"></i>
+
+<h3>Expert Technicians</h3>
+
+<p>Experienced and verified professionals.</p>
+
+</div>
+
+<div class="why-card">
+
+<i class="fa-solid fa-award"></i>
+
+<h3>Original Spare Parts</h3>
+
+<p>Only genuine replacement parts used.</p>
+
+</div>
+
+<div class="why-card">
+
+<i class="fa-solid fa-indian-rupee-sign"></i>
+
+<h3>Affordable Pricing</h3>
+
+<p>Transparent pricing with no hidden charges.</p>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ================= COMPANY STATS ================= -->
+
+<section class="counter-section">
+
+<div class="container">
+
+<div class="counter-box">
+
+<h2>10,000+</h2>
+
+<p>Happy Customers</p>
+
+</div>
+
+<div class="counter-box">
+
+<h2>8+</h2>
+
+<p>Years Experience</p>
+
+</div>
+
+<div class="counter-box">
+
+<h2>25+</h2>
+
+<p>Expert Technicians</p>
+
+</div>
+
+<div class="counter-box">
+
+<h2>24/7</h2>
+
+<p>Customer Support</p>
+
+</div>
+
+</div>
+
+</section>
+
+  <!-- ================= GALLERY ================= -->
+
+<section id="gallery" class="gallery-section">
+
+<div class="container">
+
+<h2 class="section-title">Our Recent Works</h2>
+
+<p class="section-subtitle">
+Professional Kitchen Chimney Cleaning & Repair Services
+</p>
+
+<div class="gallery-grid">
+
+<div class="gallery-item">
+<img src="images/gallery1.jpg" alt="Chimney Cleaning">
+</div>
+
+<div class="gallery-item">
+<img src="images/gallery2.jpg" alt="Chimney Repair">
+</div>
+
+<div class="gallery-item">
+<img src="images/gallery3.jpg" alt="Kitchen Chimney">
+</div>
+
+<div class="gallery-item">
+<img src="images/gallery4.jpg" alt="Hob Repair">
+</div>
+
+<div class="gallery-item">
+<img src="images/gallery5.jpg" alt="Spare Parts">
+</div>
+
+<div class="gallery-item">
+<img src="images/gallery6.jpg" alt="Service Engineer">
+</div>
+
+</div>
+
+</section>
+
+<!-- ================= BEFORE & AFTER ================= -->
+
+<section class="before-after">
+
+<div class="container">
+
+<h2 class="section-title">Before & After Service</h2>
+
+<div class="before-grid">
+
+<div>
+
+<img src="images/before.jpg" alt="Before Cleaning">
+
+<h3>Before Cleaning</h3>
+
+</div>
+
+<div>
+
+<img src="images/after.jpg" alt="After Cleaning">
+
+<h3>After Cleaning</h3>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ================= GOOGLE REVIEWS ================= -->
+
+<section class="review-section">
+
+<div class="container">
+
+<h2 class="section-title">
+
+★★★★★ 4.9 Google Rating
+
+</h2>
+
+<p class="section-subtitle">
+
+Trusted by Thousands of Customers
+
+</p>
+
+<div class="review-grid">
+
+<div class="review-card">
+
+★★★★★
+
+<h3>Ramesh Kumar</h3>
+
+<p>
+
+Excellent chimney cleaning service.
+
+Very professional technicians.
+
+</p>
+
+</div>
+
+<div class="review-card">
+
+★★★★★
+
+<h3>Sneha Reddy</h3>
+
+<p>
+
+Same-day service.
+
+Affordable pricing.
+
+Highly recommended.
+
+</p>
+
+</div>
+
+<div class="review-card">
+
+★★★★★
+
+<h3>Mahesh</h3>
+
+<p>
+
+Motor replaced within one hour.
+
+Very satisfied.
+
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ================= SERVICE AREAS ================= -->
+
+<section class="areas">
+
+<div class="container">
+
+<h2 class="section-title">
+
+Service Available Across Hyderabad
+
+</h2>
+
+<div class="area-grid">
+
+<span>KPHB</span>
+
+<span>Kukatpally</span>
+
+<span>Miyapur</span>
+
+<span>Hitech City</span>
+
+<span>Gachibowli</span>
+
+<span>Madhapur</span>
+
+<span>Kondapur</span>
+
+<span>Ameerpet</span>
+
+<span>Begumpet</span>
+
+<span>Secunderabad</span>
+
+<span>Manikonda</span>
+
+<span>Nizampet</span>
+
+</div>
+
+</div>
+
+</section>
+<!-- ================= FAQ ================= -->
+
+<section class="faq-section">
+
+<div class="container">
+
+<h2 class="section-title">
+Frequently Asked Questions
+</h2>
+
+<div class="faq-item">
+<h3>Do you provide same-day service?</h3>
+<p>Yes. Same-day doorstep service is available in most Hyderabad locations.</p>
+</div>
+
+<div class="faq-item">
+<h3>Do you use genuine spare parts?</h3>
+<p>Yes. We use original or compatible high-quality spare parts based on availability.</p>
+</div>
+
+<div class="faq-item">
+<h3>How long does chimney cleaning take?</h3>
+<p>Normally between 45 and 90 minutes depending on the condition.</p>
+</div>
+
+<div class="faq-item">
+<h3>Which brands do you service?</h3>
+<p>Faber, Elica, Glen, Hindware, Kaff, Sunflame and most other major brands.</p>
+</div>
+
+</div>
+
+</section>
+
+<!-- ================= BOOK SERVICE ================= -->
+
+<section class="booking-section">
+
+<div class="container">
+
+<h2 class="section-title">
+Book Your Service
+</h2>
+
+<form class="booking-form">
+
+<input type="text" placeholder="Full Name" required>
+
+<input type="tel" placeholder="Mobile Number" required>
+
+<select required>
+
+<option>Select Service</option>
+
+<option>Chimney Cleaning</option>
+
+<option>Chimney Repair</option>
+
+<option>Installation</option>
+
+<option>Hob Repair</option>
+
+<option>Spare Parts</option>
+
+</select>
+
+<input type="text" placeholder="Area">
+
+<textarea placeholder="Address"></textarea>
+
+<button type="submit" class="book-btn">
+
+Book Service
+
+</button>
+
+</form>
+
+</div>
+
+</section>
+
+<!-- ================= CONTACT ================= -->
+
+<section id="contact" class="contact-section">
+
+<div class="container">
+
+<h2 class="section-title">
+
+Contact Us
+
+</h2>
+
+<div class="contact-grid">
+
+<div>
+
+<h3>📞 Phone</h3>
+
+<p>
+
++91 8886093403
+
+</p>
+
+</div>
+
+<div>
+
+<h3>📧 Email</h3>
+
+<p>
+
+rajasekhar4003@gmail.com
+
+</p>
+
+</div>
+
+<div>
+
+<h3>📍 Address</h3>
+
+<p>
+
+KPHB, Hyderabad - 500016
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ================= GOOGLE MAP ================= -->
+
+<section class="map-section">
+
+<iframe
+
+src="https://www.google.com/maps?q=KPHB%20Hyderabad&output=embed"
+
+loading="lazy"
+
+allowfullscreen>
+
+</iframe>
+
+</section>
+
+<!-- ================= FOOTER ================= -->
+
+<footer>
+
+<div class="container">
+
+<h2>
+
+Urban Chimney
+
+</h2>
+
+<p>
+
+Kitchen Chimney Repair | Cleaning | Installation
+
+</p>
+
+<p>
+
+Serving All Areas in Hyderabad
+
+</p>
+
+<p>
+
+© 2026 Urban Chimney. All Rights Reserved.
+
+</p>
+
+</div>
+
+</footer>
+
+<!-- ================= FLOATING BUTTONS ================= -->
+
+<a href="https://wa.me/918886093403"
+
+class="whatsapp-float"
+
+target="_blank">
+
+<i class="fa-brands fa-whatsapp"></i>
+
+</a>
+
+<a href="tel:+918886093403"
+
+class="call-float">
+
+<i class="fa-solid fa-phone"></i>
+
+</a>
+
+<script src="app.js"></script>
+<script src="home.js"></script>
 </body>
 </html>
